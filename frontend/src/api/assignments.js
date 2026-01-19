@@ -102,5 +102,21 @@ export const studentsAPI = {
     getDashboardStats: async () => {
         const response = await api.get('/students/dashboard-stats')
         return response.data
+    },
+
+    /**
+     * Get current student details
+     */
+    getMe: async () => {
+        const response = await api.get('/students/me')
+        return response.data
+    },
+
+    /**
+     * Admin update submission status (Teacher manual grading)
+     */
+    adminUpdateStatus: async (submissionId, status, note = '') => {
+        const response = await api.patch(`/assignments/submissions/${submissionId}`, { status, note })
+        return response.data
     }
 }

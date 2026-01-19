@@ -2,7 +2,8 @@ import express from 'express'
 import {
     getAllStudents,
     getStudentDetails,
-    getDashboardStats
+    getDashboardStats,
+    getMyDetails
 } from '../controllers/studentsController.js'
 import { authenticateToken, requireAdmin } from '../middleware/auth.js'
 
@@ -21,6 +22,20 @@ const router = express.Router()
  *         description: List of students
  */
 router.get('/', authenticateToken, requireAdmin, getAllStudents)
+
+/**
+ * @swagger
+ * /api/students/me:
+ *   get:
+ *     summary: Get current student details (Self)
+ *     tags: [Students]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Student details
+ */
+router.get('/me', authenticateToken, getMyDetails)
 
 /**
  * @swagger
