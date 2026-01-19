@@ -9,7 +9,8 @@ import {
     deleteAssignment,
     updateAssignmentStatus,
     getStudentProgress,
-    assignToStudents
+    assignToStudents,
+    adminUpdateSubmissionStatus
 } from '../controllers/assignmentsController.js'
 import { authenticateToken, requireAdmin, requireStudent } from '../middleware/auth.js'
 
@@ -215,6 +216,48 @@ router.patch(
         body('status').isIn(['pending', 'in-progress', 'completed']).withMessage('Invalid status')
     ],
     updateAssignmentStatus
+)
+
+/**
+ * @swagger
+ * /api/assignments/submissions/{id}:
+ *   patch:
+ *     summary: Admin update submission status (Teacher manual grading)
+ *     tags: [Assignments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, in-progress, completed]
+ *               note:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Status updated
+ */
+router.patch(
+    '/submissions/:id',
+    authenticateToken,
+    requireAdmin,
+    [
+        body('status').isIn(['pending', 'in-progress', 'completed']).withMessage('Invalid status')
+    ],
+    adminUpdateSubmissionStatus
 )
 
 /**

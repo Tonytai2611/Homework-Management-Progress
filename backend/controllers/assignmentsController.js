@@ -12,7 +12,8 @@ export const getAllAssignments = async (req, res) => {
             .from('assignments')
             .select(`
         *,
-        created_by_user:users!assignments_created_by_fkey(id, full_name, email)
+        created_by_user:users!assignments_created_by_fkey(id, full_name, email),
+        student_assignments(student_id)
       `)
 
         if (subject) {
@@ -135,7 +136,7 @@ export const createAssignment = async (req, res) => {
             })
         }
 
-        const { title, subject, description, link, dueDate, priority, studentIds } = req.body
+        const { title, subject, description, link, dueDate, priority, studentIds, tasks } = req.body
         const createdBy = req.user.id
 
         // Create assignment
@@ -148,7 +149,8 @@ export const createAssignment = async (req, res) => {
                 link: link || null,
                 due_date: dueDate,
                 priority: priority || 'medium',
-                created_by: createdBy
+                created_by: createdBy,
+                tasks: tasks || []
             }])
             .select()
             .single()
@@ -190,7 +192,7 @@ export const createAssignment = async (req, res) => {
 export const updateAssignment = async (req, res) => {
     try {
         const { id } = req.params
-        const { title, subject, description, link, dueDate, priority } = req.body
+        const { title, subject, description, link, dueDate, priority, tasks } = req.body
 
         const updates = {}
         if (title) updates.title = title
@@ -199,6 +201,7 @@ export const updateAssignment = async (req, res) => {
         if (link !== undefined) updates.link = link
         if (dueDate) updates.due_date = dueDate
         if (priority) updates.priority = priority
+        if (tasks !== undefined) updates.tasks = tasks
 
         const { data, error } = await supabase
             .from('assignments')
@@ -316,6 +319,47 @@ export const updateAssignmentStatus = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to update assignment status'
+        })
+    }
+}
+
+/**
+ * Admin Update submission status (for Teacher manual grading)
+ */
+export const adminUpdateSubmissionStatus = async (req, res) => {
+    try {
+        const { id } = req.params // student_assignment_id
+        const { status, note } = req.body
+
+        const updates = { status }
+        if (note !== undefined) updates.notes = note
+
+        if (status === 'started' || status === 'in-progress') {
+            updates.started_at = new Date().toISOString()
+        }
+        if (status === 'completed') {
+            updates.completed_at = new Date().toISOString()
+        }
+
+        const { data, error } = await supabase
+            .from('student_assignments')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) throw error
+
+        res.json({
+            success: true,
+            message: 'Submission status updated',
+            data
+        })
+    } catch (error) {
+        console.error('Admin update submission error:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update submission status'
         })
     }
 }
