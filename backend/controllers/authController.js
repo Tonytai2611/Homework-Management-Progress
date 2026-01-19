@@ -1,10 +1,10 @@
+import supabase from '../db.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { validationResult } from 'express-validator'
-import sql from '../db.js'
 
 /**
- * Generate JWT token with 24 hour expiration
+ * Generate JWT token
  */
 const generateToken = (user) => {
     return jwt.sign(
@@ -15,7 +15,7 @@ const generateToken = (user) => {
             fullName: user.full_name
         },
         process.env.JWT_SECRET,
-        { expiresIn: '24h' } // Token expires in 24 hours
+        { expiresIn: '24h' }
     )
 }
 
@@ -23,61 +23,41 @@ const generateToken = (user) => {
  * Format user object (remove sensitive data)
  */
 const formatUser = (user) => {
+    const { password_hash, ...userWithoutPassword } = user
     return {
-        id: user.id,
-        email: user.email,
+        ...userWithoutPassword,
         fullName: user.full_name,
-        role: user.role,
-        level: user.level,
-        createdAt: user.created_at
+        createdAt: user.created_at,
+        updatedAt: user.updated_at
     }
 }
 
 /**
- * Sign Up - Register new user
+ * User signup
  */
 export const signup = async (req, res) => {
     try {
-        // Check for validation errors
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'Validation failed',
-                errors: errors.array().map(err => ({
-                    field: err.path,
-                    message: err.msg
-                }))
+                errors: errors.array()
             })
         }
 
         const { email, password, fullName, role, level } = req.body
 
         // Check if user already exists
-        const existingUser = await sql`
-      SELECT id FROM users WHERE email = ${email}
-    `
+        const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', email)
+            .single()
 
-        if (existingUser.length > 0) {
+        if (existingUser) {
             return res.status(400).json({
                 success: false,
                 message: 'Email already registered'
-            })
-        }
-
-        // Validate role
-        if (!['student', 'admin'].includes(role)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid role. Must be either "student" or "admin"'
-            })
-        }
-
-        // For students, level is required
-        if (role === 'student' && !level) {
-            return res.status(400).json({
-                success: false,
-                message: 'Level is required for students'
             })
         }
 
@@ -85,65 +65,70 @@ export const signup = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const passwordHash = await bcrypt.hash(password, salt)
 
-        // Insert new user
-        const newUser = await sql`
-      INSERT INTO users (email, password_hash, full_name, role, level)
-      VALUES (${email}, ${passwordHash}, ${fullName}, ${role}, ${level || null})
-      RETURNING id, email, full_name, role, level, created_at
-    `
+        // Create user
+        const { data: newUser, error } = await supabase
+            .from('users')
+            .insert([{
+                email,
+                password_hash: passwordHash,
+                full_name: fullName,
+                role,
+                level: role === 'student' ? level : null
+            }])
+            .select()
+            .single()
+
+        if (error) {
+            console.error('Supabase insert error:', error)
+            throw error
+        }
 
         // Generate token
-        const token = generateToken(newUser[0])
+        const token = generateToken(newUser)
 
         res.status(201).json({
             success: true,
             message: 'User registered successfully',
             token,
-            user: formatUser(newUser[0])
+            user: formatUser(newUser)
         })
     } catch (error) {
         console.error('Signup error:', error)
         res.status(500).json({
             success: false,
-            message: 'Server error during registration',
-            error: error.message
+            message: 'Registration failed'
         })
     }
 }
 
 /**
- * Sign In - Login user
+ * User signin
  */
 export const signin = async (req, res) => {
     try {
-        // Check for validation errors
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'Validation failed',
-                errors: errors.array().map(err => ({
-                    field: err.path,
-                    message: err.msg
-                }))
+                errors: errors.array()
             })
         }
 
         const { email, password } = req.body
 
-        // Find user by email
-        const users = await sql`
-      SELECT * FROM users WHERE email = ${email}
-    `
+        // Find user
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .single()
 
-        if (users.length === 0) {
+        if (error || !user) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid credentials'
             })
         }
-
-        const user = users[0]
 
         // Verify password
         const isValidPassword = await bcrypt.compare(password, user.password_hash)
@@ -151,7 +136,7 @@ export const signin = async (req, res) => {
         if (!isValidPassword) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid credentials'
             })
         }
 
@@ -160,7 +145,6 @@ export const signin = async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Login successful',
             token,
             user: formatUser(user)
         })
@@ -168,27 +152,25 @@ export const signin = async (req, res) => {
         console.error('Signin error:', error)
         res.status(500).json({
             success: false,
-            message: 'Server error during login',
-            error: error.message
+            message: 'Login failed'
         })
     }
 }
 
 /**
- * Get Current User - Get authenticated user's data
+ * Get current user
  */
 export const getCurrentUser = async (req, res) => {
     try {
-        // req.user is set by authenticateToken middleware
         const userId = req.user.id
 
-        const users = await sql`
-      SELECT id, email, full_name, role, level, created_at
-      FROM users
-      WHERE id = ${userId}
-    `
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single()
 
-        if (users.length === 0) {
+        if (error || !user) {
             return res.status(404).json({
                 success: false,
                 message: 'User not found'
@@ -197,14 +179,13 @@ export const getCurrentUser = async (req, res) => {
 
         res.json({
             success: true,
-            user: formatUser(users[0])
+            user: formatUser(user)
         })
     } catch (error) {
         console.error('Get current user error:', error)
         res.status(500).json({
             success: false,
-            message: 'Server error',
-            error: error.message
+            message: 'Failed to fetch user'
         })
     }
 }

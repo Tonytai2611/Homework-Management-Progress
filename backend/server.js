@@ -5,6 +5,8 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerSpec from './config/swagger.js'
 import { testConnection } from './db.js'
 import authRoutes from './routes/auth.js'
+import assignmentsRoutes from './routes/assignments.js'
+import studentsRoutes from './routes/students.js'
 
 // Load environment variables
 dotenv.config()
@@ -38,6 +40,8 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/assignments', assignmentsRoutes)
+app.use('/api/students', studentsRoutes)
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -74,10 +78,6 @@ async function startServer() {
             console.error('❌ Failed to connect to database. Please check your .env file.')
             process.exit(1)
         }
-
-        // Initialize database schema (auto-create tables)
-        const { initializeDatabase } = await import('./initDb.js')
-        await initializeDatabase()
 
         // Start listening
         app.listen(PORT, () => {

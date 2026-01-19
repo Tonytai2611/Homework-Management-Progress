@@ -1,105 +1,169 @@
+import { useState, useEffect } from 'react'
 import ProgressBar from '../components/shared/ProgressBar'
 import Badge from '../components/shared/Badge'
+import Header from '../components/Header'
+import { assignmentsAPI } from '../api/assignments'
+
 const StudentProgress = () => {
-  const progressData = {
-    overall: 74,
-    subjects: [
-      { name: 'Reading', progress: 75, color: 'blue', assignments: 8, completed: 6 },
-      { name: 'Grammar', progress: 72, color: 'green', assignments: 10, completed: 7 },
-      { name: 'Listening', progress: 80, color: 'purple', assignments: 5, completed: 4 },
-      { name: 'Speaking', progress: 68, color: 'orange', assignments: 6, completed: 4 }
-    ],
-    weeklyProgress: [
-      { week: 'Week 1', completed: 3 },
-      { week: 'Week 2', completed: 5 },
-      { week: 'Week 3', completed: 4 },
-      { week: 'Week 4', completed: 6 }
-    ],
-    recentAchievements: [
-      { title: 'First Assignment', description: 'Completed your first assignment!', date: '2026-01-10', icon: '🎯' },
-      { title: 'Week Streak', description: '7 days in a row!', date: '2026-01-15', icon: '🔥' },
-      { title: 'Grammar Master', description: 'Completed all grammar assignments', date: '2026-01-18', icon: '⭐' }
-    ]
-  }
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-8">
-      <div className="bg-white shadow-sm mb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">My Progress</h1>
-          <p className="text-gray-600 mt-1">Track your learning journey</p>
-        </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        {/* Overall Progress */}
-        <div className="card bg-gradient-purple-teal text-white">
-          <h2 className="text-2xl font-bold mb-4">Overall Progress</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <ProgressBar 
-                value={progressData.overall} 
-                color="teal" 
-                showLabel={false}
-                height="h-4"
-              />
+    const [progressData, setProgressData] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+
+    useEffect(() => {
+        fetchProgress()
+    }, [])
+
+    const fetchProgress = async () => {
+        try {
+            setLoading(true)
+            setError('')
+            const response = await assignmentsAPI.getProgress()
+            setProgressData(response.data)
+        } catch (err) {
+            console.error('Failed to load progress:', err)
+            setError('Failed to load progress data')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50">
+                <Header />
+                <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                        <p className="mt-4 text-gray-600">Loading progress...</p>
+                    </div>
+                </div>
             </div>
-            <span className="text-4xl font-bold ml-6">{progressData.overall}%</span>
-          </div>
-        </div>
-        {/* Subject Progress */}
-        <div className="card bg-white">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Progress by Subject</h2>
-          <div className="space-y-4">
-            {progressData.subjects.map((subject) => (
-              <div key={subject.name}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-900">{subject.name}</span>
-                  <span className="text-sm text-gray-600">
-                    {subject.completed}/{subject.assignments} completed
-                  </span>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50">
+                <Header />
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        {error}
+                    </div>
                 </div>
-                <ProgressBar
-                  value={subject.progress}
-                  color={subject.color}
-                  showLabel={false}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Weekly Progress Chart */}
-        <div className="card bg-white">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</h2>
-          <div className="flex items-end justify-between space-x-4 h-48">
-            {progressData.weeklyProgress.map((week, idx) => (
-              <div key={idx} className="flex-1 flex flex-col items-center">
-                <div 
-                  className="w-full bg-gradient-purple-teal rounded-t-lg transition-all hover:opacity-80"
-                  style={{ height: `${(week.completed / 6) * 100}%` }}
-                />
-                <span className="text-sm font-medium text-gray-700 mt-2">{week.week}</span>
-                <span className="text-xs text-gray-500">{week.completed} tasks</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Recent Achievements */}
-        <div className="card bg-white">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Achievements</h2>
-          <div className="space-y-3">
-            {progressData.recentAchievements.map((achievement, idx) => (
-              <div key={idx} className="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg">
-                <span className="text-3xl">{achievement.icon}</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{achievement.title}</h3>
-                  <p className="text-sm text-gray-600">{achievement.description}</p>
+            </div>
+        )
+    }
+
+    const { overall, bySubject, weekly } = progressData || {}
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-8">
+            <Header />
+
+            {/* Page Title */}
+            <div className="bg-white shadow-sm mb-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <h1 className="text-3xl font-bold text-gray-900">My Progress</h1>
+                    <p className="text-gray-600 mt-1">Track your learning journey</p>
                 </div>
-                <span className="text-sm text-gray-500">{achievement.date}</span>
-              </div>
-            ))}
-          </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                {/* Overall Progress */}
+                <div className="card bg-gradient-purple-teal text-white">
+                    <h2 className="text-2xl font-bold mb-4">Overall Progress</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <p className="text-purple-100 text-sm">Total Assignments</p>
+                            <p className="text-3xl font-bold">{overall?.total || 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-purple-100 text-sm">Completed</p>
+                            <p className="text-3xl font-bold">{overall?.completed || 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-purple-100 text-sm">In Progress</p>
+                            <p className="text-3xl font-bold">{overall?.in_progress || 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-purple-100 text-sm">Completion Rate</p>
+                            <p className="text-3xl font-bold">{overall?.completion_rate || 0}%</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Progress by Subject */}
+                <div className="card bg-white">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Progress by Subject</h3>
+                    <div className="space-y-4">
+                        {bySubject && bySubject.length > 0 ? (
+                            bySubject.map((subject) => (
+                                <div key={subject.subject}>
+                                    <div className="flex justify-between mb-2">
+                                        <span className="font-medium text-gray-900">{subject.subject}</span>
+                                        <span className="text-gray-600">{subject.completed}/{subject.total}</span>
+                                    </div>
+                                    <ProgressBar
+                                        progress={subject.progress}
+                                        color="purple"
+                                        height="h-3"
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-500 text-center py-4">No subject data available</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Weekly Progress */}
+                {weekly && weekly.length > 0 && (
+                    <div className="card bg-white">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</h3>
+                        <div className="space-y-3">
+                            {weekly.map((week) => (
+                                <div key={week.week} className="flex justify-between items-center">
+                                    <span className="text-gray-700">Week of {new Date(week.week).toLocaleDateString()}</span>
+                                    <Badge variant="completed">{week.completed} completed</Badge>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Achievements (Mock for now) */}
+                <div className="card bg-white">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Achievements</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {overall?.completed > 0 ? (
+                            <>
+                                <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
+                                    <span className="text-3xl">🏆</span>
+                                    <div>
+                                        <p className="font-semibold text-gray-900">First Assignment</p>
+                                        <p className="text-sm text-gray-600">Completed your first assignment!</p>
+                                    </div>
+                                </div>
+                                {overall.completed >= 5 && (
+                                    <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                                        <span className="text-3xl">⭐</span>
+                                        <div>
+                                            <p className="font-semibold text-gray-900">5 Assignments</p>
+                                            <p className="text-sm text-gray-600">Completed 5 assignments!</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <p className="text-gray-500 col-span-2 text-center py-4">
+                                Complete assignments to earn achievements!
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
+
 export default StudentProgress

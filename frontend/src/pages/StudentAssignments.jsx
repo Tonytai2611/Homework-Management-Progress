@@ -1,61 +1,64 @@
-import { useState } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
-import AssignmentCard from '../../components/shared/AssignmentCard'
-import Badge from '../../components/shared/Badge'
+import { useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import AssignmentCard from '../components/shared/AssignmentCard'
+import Badge from '../components/shared/Badge'
+import Header from '../components/Header'
+import AssignmentDetailModal from '../components/AssignmentDetailModal'
+import { assignmentsAPI } from '../api/assignments'
 
 const StudentAssignments = () => {
     const { user } = useAuth()
-    const [filter, setFilter] = useState('all') // all, pending, in-progress, completed
+    const [filter, setFilter] = useState('all')
     const [selectedSubject, setSelectedSubject] = useState('all')
-
-    // Mock data - sẽ thay bằng API call
-    const assignments = [
-        {
-            id: 1,
-            title: 'Story: "The Magic Computer"',
-            subject: 'Reading',
-            description: 'Read the story "The Magic Computer" and answer the comprehension questions',
-            dueDate: '2026-01-15',
-            status: 'pending',
-            link: 'https://example.com/story',
-            priority: 'high'
-        },
-        {
-            id: 2,
-            title: 'Past Continuous Practice',
-            subject: 'Grammar',
-            description: 'Practice using Past Continuous tense in sentences',
-            dueDate: '2026-01-16',
-            status: 'in-progress',
-            priority: 'medium'
-        },
-        {
-            id: 3,
-            title: 'Cambridge Flyers Practice Test',
-            subject: 'Listening',
-            description: 'Complete a full Cambridge Flyers listening practice test',
-            dueDate: '2026-01-17',
-            status: 'pending',
-            priority: 'medium'
-        },
-        {
-            id: 4,
-            title: 'Write About Your Favorite Day',
-            subject: 'Writing',
-            description: 'Write a short story about your favorite day',
-            dueDate: '2026-01-18',
-            status: 'completed',
-            priority: 'low'
-        }
-    ]
+    const [assignments, setAssignments] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+    const [selectedAssignment, setSelectedAssignment] = useState(null)
 
     const subjects = ['all', 'Reading', 'Writing', 'Listening', 'Speaking', 'Grammar']
 
-    const filteredAssignments = assignments.filter(assignment => {
-        const matchesFilter = filter === 'all' || assignment.status === filter
-        const matchesSubject = selectedSubject === 'all' || assignment.subject === selectedSubject
-        return matchesFilter && matchesSubject
-    })
+    // Fetch assignments
+    useEffect(() => {
+        fetchAssignments()
+    }, [filter, selectedSubject])
+
+    const fetchAssignments = async () => {
+        try {
+            setLoading(true)
+            setError('')
+
+            const filters = {}
+            if (filter !== 'all') filters.status = filter
+            if (selectedSubject !== 'all') filters.subject = selectedSubject
+
+            const response = await assignmentsAPI.getAll(filters)
+            setAssignments(response.data || [])
+        } catch (err) {
+            console.error('Failed to load assignments:', err)
+            setError('Failed to load assignments. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleStartAssignment = async (assignment) => {
+        setSelectedAssignment(assignment)
+    }
+
+    const handleViewAssignment = (assignment) => {
+        setSelectedAssignment(assignment)
+    }
+
+    const handleMarkComplete = async (assignmentId, completedTasks) => {
+        try {
+            await assignmentsAPI.updateStatus(assignmentId, 'completed', JSON.stringify(completedTasks))
+            fetchAssignments() // Refresh list
+            setSelectedAssignment(null)
+        } catch (err) {
+            console.error('Failed to mark complete:', err)
+            alert('Failed to mark assignment as complete')
+        }
+    }
 
     const stats = {
         total: assignments.length,
@@ -64,19 +67,17 @@ const StudentAssignments = () => {
         completed: assignments.filter(a => a.status === 'completed').length
     }
 
-    const handleStartAssignment = (assignment) => {
-        console.log('Starting assignment:', assignment)
-        // TODO: Navigate to assignment detail or update status
-    }
-
-    const handleViewAssignment = (assignment) => {
-        console.log('Viewing assignment:', assignment)
-        // TODO: Navigate to assignment detail
-    }
+    const filteredAssignments = assignments.filter(assignment => {
+        const matchesFilter = filter === 'all' || assignment.status === filter
+        const matchesSubject = selectedSubject === 'all' || assignment.subject === selectedSubject
+        return matchesFilter && matchesSubject
+    })
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-8">
-            {/* Header */}
+            <Header />
+
+            {/* Page Title */}
             <div className="bg-white shadow-sm mb-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <h1 className="text-3xl font-bold text-gray-900">My Assignments</h1>
@@ -85,6 +86,13 @@ const StudentAssignments = () => {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
                 {/* Stats Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div className="card bg-white">
@@ -137,8 +145,8 @@ const StudentAssignments = () => {
                                         key={status}
                                         onClick={() => setFilter(status)}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === status
-                                                ? 'bg-purple-600 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            ? 'bg-purple-600 text-white'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
                                         {status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -165,26 +173,45 @@ const StudentAssignments = () => {
                     </div>
                 </div>
 
+                {/* Loading State */}
+                {loading && (
+                    <div className="text-center py-12">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                        <p className="mt-4 text-gray-600">Loading assignments...</p>
+                    </div>
+                )}
+
                 {/* Assignments List */}
-                <div className="space-y-4">
-                    {filteredAssignments.length === 0 ? (
-                        <div className="card bg-white text-center py-12">
-                            <span className="text-6xl mb-4 block">📭</span>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">No assignments found</h3>
-                            <p className="text-gray-600">Try changing your filters</p>
-                        </div>
-                    ) : (
-                        filteredAssignments.map((assignment) => (
-                            <AssignmentCard
-                                key={assignment.id}
-                                assignment={assignment}
-                                onStart={handleStartAssignment}
-                                onView={handleViewAssignment}
-                            />
-                        ))
-                    )}
-                </div>
+                {!loading && (
+                    <div className="space-y-4">
+                        {filteredAssignments.length === 0 ? (
+                            <div className="card bg-white text-center py-12">
+                                <span className="text-6xl mb-4 block">📭</span>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No assignments found</h3>
+                                <p className="text-gray-600">Try changing your filters</p>
+                            </div>
+                        ) : (
+                            filteredAssignments.map((assignment) => (
+                                <AssignmentCard
+                                    key={assignment.id}
+                                    assignment={assignment}
+                                    onStart={handleStartAssignment}
+                                    onView={handleViewAssignment}
+                                />
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
+
+            {/* Assignment Detail Modal */}
+            {selectedAssignment && (
+                <AssignmentDetailModal
+                    assignment={selectedAssignment}
+                    onClose={() => setSelectedAssignment(null)}
+                    onMarkComplete={handleMarkComplete}
+                />
+            )}
         </div>
     )
 }

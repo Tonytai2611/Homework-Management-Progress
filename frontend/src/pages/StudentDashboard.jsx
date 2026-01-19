@@ -1,32 +1,62 @@
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 
 const StudentDashboard = () => {
     const { user, signout } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
 
     const handleSignOut = () => {
         signout()
         navigate('/signin')
     }
 
+    const navItems = [
+        { name: 'Overview', path: '/student/dashboard', icon: '📊' },
+        { name: 'Assignments', path: '/student/assignments', icon: '📚' },
+        { name: 'Calendar', path: '/student/calendar', icon: '📅' },
+        { name: 'Progress', path: '/student/progress', icon: '📈' }
+    ]
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50">
-            {/* Header */}
+            {/* Header with Navigation */}
             <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                    <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-purple-teal rounded-lg flex items-center justify-center mr-3">
-                            <span className="text-xl font-bold text-white">LB</span>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-8">
+                            <div className="flex items-center">
+                                <div className="w-10 h-10 bg-gradient-purple-teal rounded-lg flex items-center justify-center mr-3">
+                                    <span className="text-xl font-bold text-white">LB</span>
+                                </div>
+                                <h1 className="text-2xl font-bold text-gray-900">Little Buddies</h1>
+                            </div>
+
+                            {/* Navigation Menu */}
+                            <nav className="hidden md:flex space-x-2">
+                                {navItems.map((item) => (
+                                    <Link
+                                        key={item.path}
+                                        to={item.path}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${location.pathname === item.path
+                                                ? 'bg-purple-100 text-purple-700'
+                                                : 'text-gray-700 hover:bg-purple-50 hover:text-purple-600'
+                                            }`}
+                                    >
+                                        <span>{item.icon}</span>
+                                        <span>{item.name}</span>
+                                    </Link>
+                                ))}
+                            </nav>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900">Little Buddies Learning Hub</h1>
+
+                        <button
+                            onClick={handleSignOut}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                            Sign Out
+                        </button>
                     </div>
-                    <button
-                        onClick={handleSignOut}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                        Sign Out
-                    </button>
                 </div>
             </header>
 
@@ -50,11 +80,11 @@ const StudentDashboard = () => {
                     <div className="card">
                         <div className="flex items-center">
                             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                                <span className="text-2xl">👥</span>
+                                <span className="text-2xl">�</span>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Total Students</p>
-                                <p className="text-2xl font-bold text-gray-900">2</p>
+                                <p className="text-sm text-gray-600">Total Assignments</p>
+                                <p className="text-2xl font-bold text-gray-900">12</p>
                             </div>
                         </div>
                     </div>
@@ -86,11 +116,11 @@ const StudentDashboard = () => {
                     <div className="card">
                         <div className="flex items-center">
                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                                <span className="text-2xl">📚</span>
+                                <span className="text-2xl">�</span>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Total Assignments</p>
-                                <p className="text-2xl font-bold text-purple-600">12</p>
+                                <p className="text-sm text-gray-600">Progress</p>
+                                <p className="text-2xl font-bold text-purple-600">74%</p>
                             </div>
                         </div>
                     </div>
