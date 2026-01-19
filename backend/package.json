@@ -1,0 +1,30 @@
+{
+    "name": "homework-management-backend",
+    "version": "1.0.0",
+    "description": "Backend for Homework Management System with Supabase",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node --watch server.js"
+    },
+    "keywords": [
+        "homework",
+        "management",
+        "supabase",
+        "postgres"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "postgres": "^3.4.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.2",
+        "cors": "^2.8.5",
+        "bcryptjs": "^2.4.3",
+        "jsonwebtoken": "^9.0.2",
+        "express-validator": "^7.2.0",
+        "swagger-ui-express": "^5.0.1",
+        "swagger-jsdoc": "^6.2.8"
+    }
+}
