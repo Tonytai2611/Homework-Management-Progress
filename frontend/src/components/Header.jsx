@@ -1,6 +1,10 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { RxDashboard } from 'react-icons/rx'
+import { MdAssignment } from 'react-icons/md'
+import { BsCalendar3 } from 'react-icons/bs'
+import { HiOutlineChartBar } from 'react-icons/hi'
 
 const Header = () => {
     const { user, signout } = useAuth()
@@ -13,10 +17,10 @@ const Header = () => {
     }
 
     const navItems = [
-        { name: 'Overview', path: '/student/dashboard', icon: '📊' },
-        { name: 'Assignments', path: '/student/assignments', icon: '📚' },
-        { name: 'Calendar', path: '/student/calendar', icon: '📅' },
-        { name: 'Progress', path: '/student/progress', icon: '📈' }
+        { name: 'Overview', path: '/student/dashboard', icon: <RxDashboard className="w-5 h-5" /> },
+        { name: 'Assignments', path: '/student/assignments', icon: <MdAssignment className="w-5 h-5" /> },
+        { name: 'Calendar', path: '/student/calendar', icon: <BsCalendar3 className="w-5 h-5" /> },
+        { name: 'Progress', path: '/student/progress', icon: <HiOutlineChartBar className="w-5 h-5" /> }
     ]
 
     return (
@@ -38,8 +42,8 @@ const Header = () => {
                                     key={item.path}
                                     to={item.path}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 ${location.pathname === item.path
-                                            ? 'bg-purple-100 text-purple-700'
-                                            : 'text-gray-700 hover:bg-purple-50 hover:text-purple-600'
+                                        ? 'bg-purple-100 text-purple-700'
+                                        : 'text-gray-700 hover:bg-purple-50 hover:text-purple-600'
                                         }`}
                                 >
                                     <span>{item.icon}</span>

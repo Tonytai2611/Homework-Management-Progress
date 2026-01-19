@@ -11,11 +11,15 @@ const AssignmentCard = ({
         title,
         subject,
         dueDate,
+        due_date,
         status = 'pending',
         description,
         link,
         priority = 'medium'
     } = assignment
+
+    // Handle both dueDate and due_date formats
+    const dueDateValue = dueDate || due_date
 
     const subjectIcons = {
         Reading: '📖',
@@ -106,11 +110,11 @@ const AssignmentCard = ({
             )}
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <span className={`text-sm font-medium ${formatDate(dueDate).includes('Overdue') ? 'text-red-600' :
-                        formatDate(dueDate).includes('today') ? 'text-orange-600' :
-                            'text-gray-600'
+                <span className={`text-sm font-medium ${formatDate(dueDateValue).includes('Overdue') ? 'text-red-600' :
+                    formatDate(dueDateValue).includes('today') ? 'text-orange-600' :
+                        'text-gray-600'
                     }`}>
-                    📅 {formatDate(dueDate)}
+                    📅 {formatDate(dueDateValue)}
                 </span>
 
                 {showActions && (
