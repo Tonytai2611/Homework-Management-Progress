@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import BlurText from '../components/BlurText'
+import ScrollFloat from '../components/ScrollFloat'
 
 const LandingPage = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -86,15 +88,20 @@ const LandingPage = () => {
                             <div className="inline-block px-4 py-2 bg-purple-50 rounded-full text-purple-700 font-semibold text-sm mb-6 border border-purple-100">
                                 🚀 The #1 Homework Platform for Kids
                             </div>
-                            <h1 className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6">
-                                Make Learning <br />
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-teal-500">
-                                    Fun & Easy
-                                </span>
-                            </h1>
-                            <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-lg">
-                                Manage assignments, track progress, and celebrate achievements. The perfect companion for young learners, parents, and teachers.
-                            </p>
+                            <BlurText
+                                text="Make Learning Fun & Easy"
+                                delay={150}
+                                animateBy="words"
+                                direction="top"
+                                className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight mb-6"
+                            />
+                            <BlurText
+                                text="Manage assignments, track progress, and celebrate achievements. The perfect companion for young learners, parents, and teachers."
+                                delay={50}
+                                animateBy="words"
+                                direction="top"
+                                className="text-xl text-gray-600 mb-8 leading-relaxed max-w-lg"
+                            />
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Link
                                     to="/signup"
@@ -198,7 +205,14 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-20">
                         <h2 className="text-purple-600 font-bold tracking-wide uppercase text-sm mb-3">Why Choose Us</h2>
-                        <h3 className="text-4xl font-extrabold text-gray-900 mb-4">Everything you need to <br />manage homework</h3>
+                        <ScrollFloat
+                            containerClassName="mb-4"
+                            textClassName="text-4xl font-extrabold text-gray-900"
+                            animationDuration={0.8}
+                            stagger={0.02}
+                        >
+                            Everything you need to manage homework
+                        </ScrollFloat>
                         <p className="text-xl text-gray-500">Simple, intuitive, and fun. Designed for the modern classroom and digital-native students.</p>
                     </div>
 

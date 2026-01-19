@@ -97,19 +97,58 @@ const StudentProgress = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-4">Progress by Subject</h3>
                     <div className="space-y-4">
                         {bySubject && bySubject.length > 0 ? (
-                            bySubject.map((subject) => (
-                                <div key={subject.subject}>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="font-medium text-gray-900">{subject.subject}</span>
-                                        <span className="text-gray-600">{subject.completed}/{subject.total}</span>
+                            bySubject.map((subject) => {
+                                // Map subject to color
+                                const getSubjectColor = (subjectName) => {
+                                    const colors = {
+                                        'Reading': 'blue',
+                                        'Writing': 'green',
+                                        'Listening': 'purple',
+                                        'Speaking': 'orange',
+                                        'Grammar': 'teal'
+                                    }
+                                    return colors[subjectName] || 'purple'
+                                }
+
+                                // Get text color class for percentage
+                                const getTextColorClass = (color) => {
+                                    const textColors = {
+                                        'blue': 'text-blue-600',
+                                        'green': 'text-green-600',
+                                        'purple': 'text-purple-600',
+                                        'orange': 'text-orange-600',
+                                        'teal': 'text-teal-600'
+                                    }
+                                    return textColors[color] || 'text-purple-600'
+                                }
+
+                                // Calculate percentage
+                                const total = subject.total || 1
+                                const completed = subject.completed || 0
+                                const percentage = Math.round((completed / total) * 100)
+                                const subjectColor = getSubjectColor(subject.subject)
+
+                                return (
+                                    <div key={subject.subject}>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="font-medium text-gray-900">{subject.subject}</span>
+                                            <div className="flex items-center space-x-3">
+                                                <span className="text-gray-600">{completed}/{total}</span>
+                                                <span className={`text-lg font-bold ${getTextColorClass(subjectColor)}`}>
+                                                    {percentage}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <ProgressBar
+                                            value={completed}
+                                            max={total}
+                                            color={subjectColor}
+                                            height="h-3"
+                                            showLabel={false}
+                                        />
                                     </div>
-                                    <ProgressBar
-                                        progress={subject.progress}
-                                        color="purple"
-                                        height="h-3"
-                                    />
-                                </div>
-                            ))
+                                )
+                            })
                         ) : (
                             <p className="text-gray-500 text-center py-4">No subject data available</p>
                         )}
@@ -131,7 +170,7 @@ const StudentProgress = () => {
                     </div>
                 )}
 
-                {/* Achievements (Mock for now) */}
+                {/* Recent Achievements */}
                 <div className="card bg-white">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Achievements</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

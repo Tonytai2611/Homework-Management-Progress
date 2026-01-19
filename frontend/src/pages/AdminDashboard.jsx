@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import { useNavigate, Link } from 'react-router-dom'
-import { studentsAPI } from '../api/assignments'
+import { studentsAPI, assignmentsAPI } from '../api/assignments'
 import ProgressBar from '../components/shared/ProgressBar'
 import Badge from '../components/shared/Badge'
 
 const AdminDashboard = () => {
     const { user, signout } = useAuth()
+    const { showToast } = useToast()
     const navigate = useNavigate()
     const [students, setStudents] = useState([])
     const [loading, setLoading] = useState(true)
@@ -46,10 +48,14 @@ const AdminDashboard = () => {
     }
 
     const formatPercentage = (value) => {
-        if (value === null || value === undefined || isNaN(value)) {
+        // Convert to number first
+        const numValue = Number(value)
+
+        // Handle null, undefined, NaN, or non-numeric values
+        if (value === null || value === undefined || isNaN(numValue)) {
             return '0'
         }
-        return Math.round(value)
+        return Math.round(numValue)
     }
 
     const getSubjectColor = (subject) => {
@@ -62,6 +68,38 @@ const AdminDashboard = () => {
         }
         return colors[subject] || 'purple'
     }
+
+    const handleUpdateStatus = async (studentAssignmentId, status) => {
+        if (!studentAssignmentId) return
+
+        try {
+            await assignmentsAPI.adminUpdateStatus(studentAssignmentId, status, 'Marked by teacher')
+
+            showToast('Assignment status updated successfully!', 'success')
+
+            // Update local state
+            const updatedStudent = { ...selectedStudent }
+            const assignmentIndex = updatedStudent.recentAssignments.findIndex(a => a.studentAssignmentId === studentAssignmentId)
+
+            if (assignmentIndex >= 0) {
+                updatedStudent.recentAssignments[assignmentIndex].status = status
+                // Recalculate stats simplified (or just re-fetch, but optimistic update is faster)
+                // For simplicity, just update status display. Real implementation should update counts too.
+                // Let's re-fetch details for this student to be safe
+                const detailsResponse = await studentsAPI.getById(selectedStudent.student.id)
+                setSelectedStudent(detailsResponse.data)
+
+                // Also update main list
+                setStudents(prev => prev.map(s =>
+                    s.student.id === selectedStudent.student.id ? detailsResponse.data : s
+                ))
+            }
+        } catch (err) {
+            console.error('Failed to update status:', err)
+            showToast('Failed to update status', 'error')
+        }
+    }
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50">
@@ -213,10 +251,10 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">🔥 5 day streak</p>
+                                            <p className="text-sm text-gray-600">🔥 {student.stats?.weeklyStreak || 0} week streak</p>
                                         </div>
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">⭐ 1850 pts</p>
+                                            <p className="text-sm text-gray-600">⭐ 0 pts</p>
                                         </div>
                                     </div>
                                 </div>
@@ -291,7 +329,7 @@ const AdminDashboard = () => {
             {selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
                             <h2 className="text-xl font-bold text-gray-900">
                                 {selectedStudent.student?.fullName} - Detailed Performance
                             </h2>
@@ -305,21 +343,28 @@ const AdminDashboard = () => {
 
                         <div className="px-6 py-6 space-y-6">
                             {/* Full stats */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                                 <div className="card bg-gradient-purple-teal text-white">
-                                    <p className="text-sm opacity-90">Total</p>
+                                    <p className="text-sm opacity-90">Total Tasks</p>
                                     <p className="text-3xl font-bold">{selectedStudent.stats?.total || 0}</p>
+                                </div>
+                                <div className="card bg-orange-50">
+                                    <p className="text-sm text-gray-600">Streak</p>
+                                    <div className="flex items-baseline">
+                                        <p className="text-3xl font-bold text-orange-600">{selectedStudent.stats?.weeklyStreak || 0}</p>
+                                        <span className="ml-1 text-sm text-orange-600">weeks 🔥</span>
+                                    </div>
                                 </div>
                                 <div className="card bg-green-50">
                                     <p className="text-sm text-gray-600">Completed</p>
                                     <p className="text-3xl font-bold text-green-600">{selectedStudent.stats?.completed || 0}</p>
                                 </div>
-                                <div className="card bg-orange-50">
+                                <div className="card bg-blue-50">
                                     <p className="text-sm text-gray-600">Pending</p>
-                                    <p className="text-3xl font-bold text-orange-600">{selectedStudent.stats?.pending || 0}</p>
+                                    <p className="text-3xl font-bold text-blue-600">{selectedStudent.stats?.pending || 0}</p>
                                 </div>
                                 <div className="card bg-purple-50">
-                                    <p className="text-sm text-gray-600">Rate</p>
+                                    <p className="text-sm text-gray-600">Completion</p>
                                     <p className="text-3xl font-bold text-purple-600">
                                         {formatPercentage(selectedStudent.stats?.completionRate)}%
                                     </p>
@@ -331,15 +376,28 @@ const AdminDashboard = () => {
                                 <h3 className="text-lg font-bold text-gray-900 mb-4">All Assignments ({selectedStudent.recentAssignments?.length || 0})</h3>
                                 <div className="space-y-3">
                                     {selectedStudent.recentAssignments?.map((assignment) => (
-                                        <div key={assignment.id} className="border border-gray-200 rounded-lg p-4">
+                                        <div key={assignment.id} className="border border-gray-200 rounded-lg p-4 hover:border-purple-200 transition-colors">
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
                                                     <p className="text-sm text-gray-600">{assignment.subject}</p>
                                                 </div>
-                                                <Badge variant={assignment.status === 'completed' ? 'completed' : 'pending'}>
-                                                    {assignment.status}
-                                                </Badge>
+                                                <div className="flex items-center space-x-3">
+                                                    <Badge variant={assignment.status === 'completed' ? 'completed' : 'pending'}>
+                                                        {assignment.status}
+                                                    </Badge>
+                                                    {assignment.status !== 'completed' && (
+                                                        <button
+                                                            onClick={() => handleUpdateStatus(assignment.studentAssignmentId, 'completed')}
+                                                            className="p-1 rounded-full text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+                                                            title="Mark as Completed"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     ))}

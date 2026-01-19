@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { assignmentsAPI, studentsAPI } from '../api/assignments'
 import Badge from '../components/shared/Badge'
@@ -9,6 +10,7 @@ import AssignmentDetailModal from '../components/AssignmentDetailModal'
 
 const ManageAssignments = () => {
     const { user, signout } = useAuth()
+    const { showToast } = useToast()
     const navigate = useNavigate()
 
     // Form state
@@ -104,7 +106,7 @@ const ManageAssignments = () => {
                 dueDate: new Date(formData.dueDate).toISOString()
             })
 
-            setSuccess('Assignment created successfully!')
+            showToast('Assignment created successfully!', 'success')
 
             // Reset form
             setFormData({
@@ -121,11 +123,9 @@ const ManageAssignments = () => {
 
             // Refresh assignments list
             fetchAssignments()
-
-            setTimeout(() => setSuccess(''), 3000)
         } catch (err) {
             console.error('Create assignment error:', err)
-            setError(err.response?.data?.message || 'Failed to create assignment')
+            showToast(err.response?.data?.message || 'Failed to create assignment', 'error')
         } finally {
             setLoading(false)
         }
@@ -194,13 +194,12 @@ const ManageAssignments = () => {
 
         try {
             await assignmentsAPI.delete(deletingAssignment.id)
-            setSuccess('Assignment deleted successfully!')
+            showToast('Assignment deleted successfully!', 'success')
             fetchAssignments()
             setDeletingAssignment(null)
-            setTimeout(() => setSuccess(''), 3000)
         } catch (err) {
             console.error('Delete assignment error:', err)
-            setError('Failed to delete assignment')
+            showToast('Failed to delete assignment', 'error')
             setDeletingAssignment(null)
         }
     }
@@ -276,23 +275,24 @@ const ManageAssignments = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Student
                                 </label>
-                                <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto">
-                                    {students.length === 0 ? (
-                                        <p className="text-gray-500 text-sm">No students available</p>
-                                    ) : (
-                                        students.map(student => (
-                                            <label key={student.id} className="flex items-center space-x-2 py-1 cursor-pointer hover:bg-gray-50">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData.studentIds.includes(student.id)}
-                                                    onChange={() => handleStudentSelect(student.id)}
-                                                    className="rounded text-purple-600 focus:ring-purple-500"
-                                                />
-                                                <span className="text-sm">{student.full_name} ({student.level})</span>
-                                            </label>
-                                        ))
-                                    )}
-                                </div>
+                                <select
+                                    value={formData.studentIds[0] || ''}
+                                    onChange={(e) => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            studentIds: e.target.value ? [e.target.value] : []
+                                        }))
+                                    }}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    required
+                                >
+                                    <option value="">Select student...</option>
+                                    {students.map(student => (
+                                        <option key={student.id} value={student.id}>
+                                            {student.full_name} ({student.level})
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             {/* Subject */}

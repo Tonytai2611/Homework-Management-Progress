@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import AssignmentCard from '../components/shared/AssignmentCard'
 import Badge from '../components/shared/Badge'
 import Header from '../components/Header'
 import AssignmentDetailModal from '../components/AssignmentDetailModal'
 import { assignmentsAPI } from '../api/assignments'
+import { IoCheckmarkCircle } from 'react-icons/io5'
+import { GrInProgress } from 'react-icons/gr'
+import { MdOutlinePendingActions } from 'react-icons/md'
 
 const StudentAssignments = () => {
     const { user } = useAuth()
+    const { showToast } = useToast()
     const [filter, setFilter] = useState('all')
     const [selectedSubject, setSelectedSubject] = useState('all')
     const [assignments, setAssignments] = useState([])
@@ -101,7 +106,6 @@ const StudentAssignments = () => {
                                 <p className="text-sm text-gray-600">Total</p>
                                 <p className="text-2xl font-bold text-purple-600">{stats.total}</p>
                             </div>
-                            <span className="text-3xl">📚</span>
                         </div>
                     </div>
                     <div className="card bg-white">
@@ -110,7 +114,6 @@ const StudentAssignments = () => {
                                 <p className="text-sm text-gray-600">Pending</p>
                                 <p className="text-2xl font-bold text-orange-600">{stats.pending}</p>
                             </div>
-                            <span className="text-3xl">⏳</span>
                         </div>
                     </div>
                     <div className="card bg-white">
@@ -119,7 +122,6 @@ const StudentAssignments = () => {
                                 <p className="text-sm text-gray-600">In Progress</p>
                                 <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
                             </div>
-                            <span className="text-3xl">📝</span>
                         </div>
                     </div>
                     <div className="card bg-white">
@@ -128,7 +130,6 @@ const StudentAssignments = () => {
                                 <p className="text-sm text-gray-600">Completed</p>
                                 <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
                             </div>
-                            <span className="text-3xl">✅</span>
                         </div>
                     </div>
                 </div>
@@ -144,12 +145,21 @@ const StudentAssignments = () => {
                                     <button
                                         key={status}
                                         onClick={() => setFilter(status)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === status
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${filter === status
                                             ? 'bg-purple-600 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
-                                        {status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
+                                        {status === 'pending' && (
+                                            <MdOutlinePendingActions className={`w-4 h-4 ${filter === status ? 'text-white' : 'text-orange-600'}`} />
+                                        )}
+                                        {status === 'in-progress' && (
+                                            <GrInProgress className={`w-4 h-4 ${filter === status ? 'text-white' : 'text-blue-600'}`} />
+                                        )}
+                                        {status === 'completed' && (
+                                            <IoCheckmarkCircle className={`w-4 h-4 ${filter === status ? 'text-white' : 'text-green-600'}`} />
+                                        )}
+                                        <span>{status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}</span>
                                     </button>
                                 ))}
                             </div>
