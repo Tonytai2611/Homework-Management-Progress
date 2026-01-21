@@ -3,7 +3,9 @@ import {
     getAllStudents,
     getStudentDetails,
     getDashboardStats,
-    getMyDetails
+    getMyDetails,
+    updateStudentPoints,
+    updateStudentStreak
 } from '../controllers/studentsController.js'
 import { authenticateToken, requireAdmin } from '../middleware/auth.js'
 
@@ -70,5 +72,63 @@ router.get('/dashboard-stats', authenticateToken, requireAdmin, getDashboardStat
  *         description: Student details with progress
  */
 router.get('/:id', authenticateToken, requireAdmin, getStudentDetails)
+
+/**
+ * @swagger
+ * /api/students/{id}/points:
+ *   put:
+ *     summary: Update student points (Admin only)
+ *     tags: [Students]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               points:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Points updated
+ */
+router.put('/:id/points', authenticateToken, requireAdmin, updateStudentPoints)
+
+/**
+ * @swagger
+ * /api/students/{id}/streak:
+ *   put:
+ *     summary: Update student streak (Admin only)
+ *     tags: [Students]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               streak:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Streak updated
+ */
+router.put('/:id/streak', authenticateToken, requireAdmin, updateStudentStreak)
 
 export default router

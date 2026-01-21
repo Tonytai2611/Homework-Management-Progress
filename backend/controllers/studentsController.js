@@ -7,7 +7,7 @@ export const getAllStudents = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('users')
-            .select('id, email, full_name, level, created_at')
+            .select('id, email, full_name, level, points, streak, created_at')
             .eq('role', 'student')
             .order('created_at', { ascending: false })
 
@@ -31,7 +31,7 @@ export const getAllStudents = async (req, res) => {
  */
 export const getMyDetails = async (req, res) => {
     console.log('getMyDetails called, req.user:', req.user)
-    
+
     if (!req.user || !req.user.id) {
         console.error('getMyDetails: No user ID in token')
         return res.status(401).json({
@@ -39,7 +39,7 @@ export const getMyDetails = async (req, res) => {
             message: 'User ID not found in token'
         })
     }
-    
+
     req.params.id = req.user.id
     return getStudentDetails(req, res)
 }
@@ -207,6 +207,8 @@ export const getStudentDetails = async (req, res) => {
                     email: student.email,
                     fullName: student.full_name,
                     level: student.level,
+                    points: student.points,
+                    streak: student.streak,
                     createdAt: student.created_at
                 },
                 stats: {
@@ -215,7 +217,8 @@ export const getStudentDetails = async (req, res) => {
                     inProgress,
                     pending,
                     completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-                    weeklyStreak: streak
+                    completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+                    weeklyStreak: student.streak !== null ? student.streak : streak
                 },
                 bySubject,
                 recentAssignments: assignments.map(sa => ({
@@ -286,6 +289,68 @@ export const getDashboardStats = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch dashboard stats'
+        })
+    }
+}
+
+/**
+ * Update student points (Admin)
+ */
+export const updateStudentPoints = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { points } = req.body
+
+        const { data, error } = await supabase
+            .from('users')
+            .update({ points })
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) throw error
+
+        res.json({
+            success: true,
+            message: 'Points updated successfully',
+            data
+        })
+    } catch (error) {
+        console.error('Update points error:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update points'
+        })
+    }
+}
+
+/**
+ * Update student streak (Admin)
+ */
+export const updateStudentStreak = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { streak } = req.body
+
+        const { data, error } = await supabase
+            .from('users')
+            .update({ streak })
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) throw error
+
+        res.json({
+            success: true,
+            message: 'Streak updated successfully',
+            data
+        })
+    } catch (error) {
+        console.error('Update streak error:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update streak'
         })
     }
 }

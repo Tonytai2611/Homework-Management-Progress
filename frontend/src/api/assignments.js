@@ -118,5 +118,21 @@ export const studentsAPI = {
     adminUpdateStatus: async (submissionId, status, note = '') => {
         const response = await api.patch(`/assignments/submissions/${submissionId}`, { status, note })
         return response.data
+    },
+
+    /**
+     * Update student points (Admin)
+     */
+    updatePoints: async (id, points) => {
+        const response = await api.put(`/students/${id}/points`, { points })
+        return response.data
+    },
+
+    /**
+     * Update student streak (Admin)
+     */
+    updateStreak: async (id, streak) => {
+        const response = await api.put(`/students/${id}/streak`, { streak })
+        return response.data
     }
 }

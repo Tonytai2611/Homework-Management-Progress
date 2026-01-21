@@ -15,6 +15,9 @@ const AdminDashboard = () => {
     const [students, setStudents] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectedStudent, setSelectedStudent] = useState(null)
+    const [editingPoints, setEditingPoints] = useState({ studentId: null, points: 0 })
+    const [editingStreak, setEditingStreak] = useState({ studentId: null, streak: 0 })
+
 
     useEffect(() => {
         fetchStudents()
@@ -99,6 +102,80 @@ const AdminDashboard = () => {
         } catch (err) {
             console.error('Failed to update status:', err)
             showToast('Failed to update status', 'error')
+        }
+    }
+
+    const handleEditPoints = (student) => {
+        setEditingPoints({
+            studentId: student.id,
+            points: student.points || 0
+        })
+    }
+
+    const handleSavePoints = async () => {
+        if (!editingPoints.studentId) return
+
+        try {
+            await studentsAPI.updatePoints(editingPoints.studentId, Number(editingPoints.points))
+            showToast('Points updated successfully!', 'success')
+
+            // Update local state
+            setStudents(prev => prev.map(s => {
+                if (s.student.id === editingPoints.studentId) {
+                    return {
+                        ...s,
+                        student: {
+                            ...s.student,
+                            points: Number(editingPoints.points)
+                        }
+                    }
+                }
+                return s
+            }))
+
+            setEditingPoints({ studentId: null, points: 0 })
+        } catch (err) {
+            console.error('Failed to update points:', err)
+            showToast('Failed to update points', 'error')
+        }
+    }
+
+    const handleEditStreak = (student, currentStreak) => {
+        setEditingStreak({
+            studentId: student.id,
+            streak: currentStreak || 0
+        })
+    }
+
+    const handleSaveStreak = async () => {
+        if (!editingStreak.studentId) return
+
+        try {
+            await studentsAPI.updateStreak(editingStreak.studentId, Number(editingStreak.streak))
+            showToast('Streak updated successfully!', 'success')
+
+            // Update local state
+            setStudents(prev => prev.map(s => {
+                if (s.student.id === editingStreak.studentId) {
+                    return {
+                        ...s,
+                        stats: {
+                            ...s.stats,
+                            weeklyStreak: Number(editingStreak.streak)
+                        },
+                        student: {
+                            ...s.student,
+                            streak: Number(editingStreak.streak)
+                        }
+                    }
+                }
+                return s
+            }))
+
+            setEditingStreak({ studentId: null, streak: 0 })
+        } catch (err) {
+            console.error('Failed to update streak:', err)
+            showToast('Failed to update streak', 'error')
         }
     }
 
@@ -253,13 +330,59 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-center">
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <LocalFireDepartmentIcon className="text-red-600 mr-1" sx={{ fontSize: 18 }} />
-                                                {student.stats?.weeklyStreak || 0} week streak
-                                            </div>
+                                            {editingStreak.studentId === student.student.id ? (
+                                                <div className="flex items-center space-x-1">
+                                                    <input
+                                                        type="number"
+                                                        value={editingStreak.streak}
+                                                        onChange={(e) => setEditingStreak(prev => ({ ...prev, streak: e.target.value }))}
+                                                        className="w-16 px-2 py-1 text-sm border border-purple-300 rounded focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                                        autoFocus
+                                                    />
+                                                    <button onClick={handleSaveStreak} className="text-green-600 hover:text-green-800">✓</button>
+                                                    <button onClick={() => setEditingStreak({ studentId: null, streak: 0 })} className="text-red-600 hover:text-red-800">×</button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center text-sm text-gray-600 group cursor-pointer" onClick={() => handleEditStreak(student.student, student.stats?.weeklyStreak)}>
+                                                    <LocalFireDepartmentIcon className="text-red-600 mr-1" sx={{ fontSize: 18 }} />
+                                                    {student.stats?.weeklyStreak || 0} week streak
+                                                    <span className="ml-1 opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity">✎</span>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">⭐ 0 pts</p>
+                                            {editingPoints.studentId === student.student.id ? (
+                                                <div className="flex items-center space-x-1">
+                                                    <input
+                                                        type="number"
+                                                        value={editingPoints.points}
+                                                        onChange={(e) => setEditingPoints(prev => ({ ...prev, points: e.target.value }))}
+                                                        className="w-16 px-2 py-1 text-sm border border-purple-300 rounded focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                                        autoFocus
+                                                    />
+                                                    <button
+                                                        onClick={handleSavePoints}
+                                                        className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                                        title="Save"
+                                                    >
+                                                        ✓
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setEditingPoints({ studentId: null, points: 0 })}
+                                                        className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                                        title="Cancel"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="group relative flex items-center justify-center cursor-pointer" onClick={() => handleEditPoints(student.student)}>
+                                                    <p className="text-sm text-gray-600 flex items-center">
+                                                        ⭐ {student.student?.points || 0} pts
+                                                        <span className="ml-1 opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity">✎</span>
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

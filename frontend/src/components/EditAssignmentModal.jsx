@@ -9,7 +9,10 @@ const EditAssignmentModal = ({ assignment, onClose, onUpdate }) => {
         link: assignment.link || '',
         dueDate: assignment.due_date ? assignment.due_date.split('T')[0] : '',
         priority: assignment.priority || 'medium',
-        tasks: assignment.tasks || []
+        tasks: (assignment.tasks || []).map((t, i) => ({
+            ...t,
+            id: t.id || Date.now() + i
+        }))
     })
 
     const [newTask, setNewTask] = useState('')
@@ -190,9 +193,20 @@ const EditAssignmentModal = ({ assignment, onClose, onUpdate }) => {
                         <div className="space-y-2">
                             {formData.tasks.map((task) => (
                                 <div key={task.id} className="flex items-center space-x-2">
-                                    <span className="flex-1 px-3 py-2 bg-gray-50 rounded-lg text-sm">
-                                        {task.text}
-                                    </span>
+                                    <input
+                                        type="text"
+                                        value={task.text}
+                                        onChange={(e) => {
+                                            const newText = e.target.value
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                tasks: prev.tasks.map(t =>
+                                                    t.id === task.id ? { ...t, text: newText } : t
+                                                )
+                                            }))
+                                        }}
+                                        className="flex-1 px-3 py-2 bg-gray-50 rounded-lg text-sm border border-transparent focus:bg-white focus:border-purple-300 focus:outline-none transition-colors"
+                                    />
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveTask(task.id)}

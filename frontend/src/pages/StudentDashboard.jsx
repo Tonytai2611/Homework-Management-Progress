@@ -26,6 +26,7 @@ const StudentDashboard = () => {
     })
     const [assignments, setAssignments] = useState([])
     const [loading, setLoading] = useState(true)
+    const [studentData, setStudentData] = useState(null)
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -45,6 +46,11 @@ const StudentDashboard = () => {
                     completionRate: stats.completionRate || 0,
                     weeklyStreak: stats.weeklyStreak || 0
                 })
+
+                // Set fresh student data (points, streak, etc.)
+                if (data.student) {
+                    setStudentData(data.student)
+                }
 
                 // Get assignments from the same response (recentAssignments)
                 console.log('Recent assignments:', data.recentAssignments)
@@ -218,19 +224,19 @@ const StudentDashboard = () => {
                         <div className="flex items-center space-x-3 sm:space-x-4">
                             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-purple-teal rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-xl sm:text-2xl font-bold text-white">
-                                    {user?.fullName?.charAt(0) || 'U'}
+                                    {studentData?.fullName?.charAt(0) || user?.fullName?.charAt(0) || 'U'}
                                 </span>
                             </div>
                             <div>
-                                <h4 className="text-base sm:text-lg font-bold text-gray-900">{user?.fullName || 'Student'}</h4>
-                                <p className="text-xs sm:text-sm text-gray-600">{user?.level || 'FLYERS'} Level</p>
+                                <h4 className="text-base sm:text-lg font-bold text-gray-900">{studentData?.fullName || user?.fullName || 'Student'}</h4>
+                                <p className="text-xs sm:text-sm text-gray-600">{studentData?.level || user?.level || 'FLYERS'} Level</p>
                                 <div className="flex items-center flex-wrap gap-2 sm:gap-3 mt-1">
                                     <span className="text-xs text-orange-600 flex items-center">
                                         <LocalFireDepartmentIcon className="text-red-600 mr-1" sx={{ fontSize: 20 }} />
-                                        {stats.weeklyStreak}-day streak
+                                        {stats.weeklyStreak} week streaks
                                     </span>
                                     <span className="text-xs text-blue-600 flex items-center">
-                                        ⭐ {stats.total * 100} pts
+                                        ⭐ {studentData?.points ?? user?.points ?? 0} pts
                                     </span>
                                 </div>
                             </div>
