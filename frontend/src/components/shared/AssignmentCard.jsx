@@ -5,6 +5,7 @@ import { SubjectIcon } from '../../utils/subjectIcons'
 const AssignmentCard = ({
     assignment,
     onClick,
+    onView,
     compact = false,
     showActions = false
 }) => {
@@ -69,7 +70,10 @@ const AssignmentCard = ({
     }
 
     return (
-        <div className={`card hover:shadow-xl transition-all duration-200 ${priorityColors[priority]} p-3 sm:p-4`}>
+        <div
+            className={`card hover:shadow-xl transition-all duration-200 ${priorityColors[priority]} p-3 sm:p-4 cursor-pointer`}
+            onClick={onClick}
+        >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0 mb-3">
                 <div className="flex items-center space-x-2 sm:space-x-3">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-purple-teal rounded-lg flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
@@ -98,23 +102,25 @@ const AssignmentCard = ({
             )}
 
             {showActions && (
-                <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-gray-200">
-                    <Link
-                        to={`/student/assignments/${id}`}
-                        className="flex-1 px-3 py-1.5 text-center bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs sm:text-sm font-medium"
+                <div className="flex justify-end pt-3 border-t border-gray-200">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            onView ? onView() : null
+                        }}
+                        className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+                        title="View Details"
                     >
-                        View Details
-                    </Link>
-                    {status !== 'completed' && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                onClick?.()
-                            }}
-                            className="flex-1 px-3 py-1.5 text-center border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors text-xs sm:text-sm font-medium"
+                        <i className="fi fi-rr-eye text-xl"></i>
+                    </button>
+                    {!onView && !onClick && (
+                        <Link
+                            to={`/student/assignments/${id}`}
+                            className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+                            title="View Details"
                         >
-                            Update Status
-                        </button>
+                            <i className="fi fi-rr-eye text-xl"></i>
+                        </Link>
                     )}
                 </div>
             )}

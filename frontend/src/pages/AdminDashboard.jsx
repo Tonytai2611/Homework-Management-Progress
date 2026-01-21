@@ -6,6 +6,7 @@ import { studentsAPI, assignmentsAPI } from '../api/assignments'
 import ProgressBar from '../components/shared/ProgressBar'
 import Badge from '../components/shared/Badge'
 import { SubjectIcon } from '../utils/subjectIcons'
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 
 const AdminDashboard = () => {
     const { user, signout } = useAuth()
@@ -252,7 +253,10 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-center">
-                                            <p className="text-sm text-gray-600">🔥 {student.stats?.weeklyStreak || 0} week streak</p>
+                                            <div className="flex items-center text-sm text-gray-600">
+                                                <LocalFireDepartmentIcon className="text-red-600 mr-1" sx={{ fontSize: 18 }} />
+                                                {student.stats?.weeklyStreak || 0} week streak
+                                            </div>
                                         </div>
                                         <div className="text-center">
                                             <p className="text-sm text-gray-600">⭐ 0 pts</p>
@@ -355,7 +359,10 @@ const AdminDashboard = () => {
                                 <div className="card bg-orange-50">
                                     <p className="text-sm text-gray-600">Streak</p>
                                     <div className="flex items-baseline">
-                                        <p className="text-3xl font-bold text-orange-600">{selectedStudent.stats?.weeklyStreak || 0}</p>
+                                        <div className="flex items-center">
+                                            <LocalFireDepartmentIcon className="text-red-600 mr-2" sx={{ fontSize: 32 }} />
+                                            <p className="text-3xl font-bold text-orange-600">{selectedStudent.stats?.weeklyStreak || 0}</p>
+                                        </div>
                                         <span className="ml-1 text-sm text-orange-600">weeks 🔥</span>
                                     </div>
                                 </div>

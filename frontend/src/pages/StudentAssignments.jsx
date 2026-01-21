@@ -189,8 +189,9 @@ const StudentAssignments = () => {
                                 <AssignmentCard
                                     key={assignment.id}
                                     assignment={assignment}
-                                    onStart={handleStartAssignment}
-                                    onView={handleViewAssignment}
+                                    onClick={() => handleViewAssignment(assignment)}
+                                    onView={() => handleViewAssignment(assignment)}
+                                    showActions={true}
                                 />
                             ))
                         )}

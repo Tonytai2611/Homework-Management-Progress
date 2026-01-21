@@ -6,6 +6,7 @@ import Header from '../components/Header'
 import ProgressBar from '../components/shared/ProgressBar'
 import { SubjectIcon } from '../utils/subjectIcons'
 import Badge from '../components/shared/Badge'
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 
 const StudentsListPage = () => {
     const { signout } = useAuth()
@@ -141,8 +142,11 @@ const StudentsListPage = () => {
 
                             {/* Stats Row */}
                             <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="text-center p-3 bg-orange-50 rounded-lg">
-                                    <p className="text-2xl font-bold text-orange-600">🔥 5</p>
+                                <div className="text-center p-3 bg-orange-50 rounded-lg flex flex-col items-center">
+                                    <div className="flex items-center space-x-1">
+                                        <LocalFireDepartmentIcon className="text-red-600" sx={{ fontSize: 24 }} />
+                                        <p className="text-2xl font-bold text-orange-600">5</p>
+                                    </div>
                                     <p className="text-sm text-gray-600">day streak</p>
                                 </div>
                                 <div className="text-center p-3 bg-yellow-50 rounded-lg">

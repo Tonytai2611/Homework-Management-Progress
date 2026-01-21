@@ -8,6 +8,8 @@ import { BsCalendar3 } from 'react-icons/bs'
 import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
 import ProgressBar from '../components/shared/ProgressBar'
 import { SubjectIcon } from '../utils/subjectIcons'
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
+import TextType from '../components/TextType'
 
 const StudentDashboard = () => {
     const { user, signout } = useAuth()
@@ -161,7 +163,14 @@ const StudentDashboard = () => {
                                     {user?.fullName?.charAt(0) || 'S'}
                                 </div>
                                 <div>
-                                    <h2 className="text-xl sm:text-3xl font-bold mb-1">Welcome back, {user?.fullName}!</h2>
+                                    <TextType
+                                        text={`Welcome back, ${user?.fullName}!`}
+                                        className="text-xl sm:text-3xl font-bold mb-1 block"
+                                        typingSpeed={100}
+                                        cursorCharacter="_"
+                                        loop={false}
+                                        showCursor={true}
+                                    />
                                     <p className="text-purple-100 text-sm sm:text-base">Keep up the great work!</p>
                                 </div>
                             </div>
@@ -217,7 +226,8 @@ const StudentDashboard = () => {
                                 <p className="text-xs sm:text-sm text-gray-600">{user?.level || 'FLYERS'} Level</p>
                                 <div className="flex items-center flex-wrap gap-2 sm:gap-3 mt-1">
                                     <span className="text-xs text-orange-600 flex items-center">
-                                        🔥 {stats.weeklyStreak}-day streak
+                                        <LocalFireDepartmentIcon className="text-red-600 mr-1" sx={{ fontSize: 20 }} />
+                                        {stats.weeklyStreak}-day streak
                                     </span>
                                     <span className="text-xs text-blue-600 flex items-center">
                                         ⭐ {stats.total * 100} pts
