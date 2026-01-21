@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { studentsAPI } from '../api/assignments'
+import Header from '../components/Header'
 import ProgressBar from '../components/shared/ProgressBar'
+import { SubjectIcon } from '../utils/subjectIcons'
 import Badge from '../components/shared/Badge'
 
 const StudentsListPage = () => {
@@ -184,7 +186,7 @@ const StudentsListPage = () => {
                                 <div className="space-y-2">
                                     {student.recentAssignments?.slice(0, 3).map((assignment) => (
                                         <div key={assignment.id} className="flex items-center space-x-2 text-sm">
-                                            <span className="text-lg">{assignment.subject === 'Reading' ? '📖' : assignment.subject === 'Writing' ? '✏️' : '🎧'}</span>
+                                            <SubjectIcon subject={assignment.subject} className="text-lg" />
                                             <span className="flex-1 text-gray-700">{assignment.title}</span>
                                             <span className={`w-2 h-2 rounded-full ${assignment.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
                                                 }`}></span>

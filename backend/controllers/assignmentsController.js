@@ -45,41 +45,74 @@ export const getStudentAssignments = async (req, res) => {
         const studentId = req.user.id
         const { status, subject } = req.query
 
+        // 1. Get student assignments
         let query = supabase
             .from('student_assignments')
-            .select(`
-        *,
-        assignment:assignments(*)
-      `)
+            .select('*')
             .eq('student_id', studentId)
 
         if (status) {
             query = query.eq('status', status)
         }
 
-        const { data, error } = await query.order('assignment(due_date)', { ascending: true })
+        const { data: studentAssignments, error: saError } = await query
 
-        if (error) throw error
+        if (saError) throw saError
 
-        // Filter by subject if needed
-        let filteredData = data
-        if (subject) {
-            filteredData = data.filter(sa => sa.assignment.subject === subject)
+        if (!studentAssignments || studentAssignments.length === 0) {
+            return res.json({
+                success: true,
+                data: []
+            })
         }
 
-        // Transform data
-        const assignments = filteredData.map(sa => ({
-            ...sa.assignment,
-            student_assignment_id: sa.id,
-            status: sa.status,
-            started_at: sa.started_at,
-            completed_at: sa.completed_at,
-            notes: sa.notes
-        }))
+        // 2. Get assignment details
+        const assignmentIds = studentAssignments.map(sa => sa.assignment_id)
+
+        // Fetch assignments
+        let assignmentsQuery = supabase
+            .from('assignments')
+            .select('*, created_by_user:users!assignments_created_by_fkey(id, full_name, email)')
+            .in('id', assignmentIds)
+
+        // Filter by subject if provided
+        if (subject) {
+            assignmentsQuery = assignmentsQuery.eq('subject', subject)
+        }
+
+        const { data: assignmentsData, error: aError } = await assignmentsQuery
+
+        if (aError) throw aError
+
+        // 3. Map/Merge data
+        // Create a map for faster lookup
+        const assignmentsMap = (assignmentsData || []).reduce((acc, curr) => {
+            acc[curr.id] = curr
+            return acc
+        }, {})
+
+        // Combine data
+        const combinedAssignments = studentAssignments
+            .map(sa => {
+                const assignment = assignmentsMap[sa.assignment_id]
+                // Skip if assignment not found (filtered out by subject or deleted)
+                if (!assignment) return null
+
+                return {
+                    ...assignment,
+                    student_assignment_id: sa.id,
+                    status: sa.status,
+                    started_at: sa.started_at,
+                    completed_at: sa.completed_at,
+                    notes: sa.notes
+                }
+            })
+            .filter(item => item !== null) // Remove nulls
+            .sort((a, b) => new Date(a.due_date) - new Date(b.due_date)) // Sort by due date
 
         res.json({
             success: true,
-            data: assignments
+            data: combinedAssignments
         })
     } catch (error) {
         console.error('Get student assignments error:', error)

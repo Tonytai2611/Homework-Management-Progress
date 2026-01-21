@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { assignmentsAPI, studentsAPI } from '../api/assignments'
+import Header from '../components/Header'
+import { getSubjectIcon, SubjectIcon } from '../utils/subjectIcons'
 import Badge from '../components/shared/Badge'
 import EditAssignmentModal from '../components/EditAssignmentModal'
 import ConfirmDialog from '../components/ConfirmDialog'
@@ -176,17 +178,6 @@ const ManageAssignments = () => {
             case 'low': return 'text-green-600'
             default: return 'text-gray-600'
         }
-    }
-
-    const getSubjectIcon = (subject) => {
-        const icons = {
-            'Reading': '📖',
-            'Writing': '✍️',
-            'Listening': '👂',
-            'Speaking': '🗣️',
-            'Grammar': '📝'
-        }
-        return icons[subject] || '📚'
     }
 
     const handleDeleteAssignment = async () => {
@@ -491,7 +482,7 @@ const ManageAssignments = () => {
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                <span className="text-2xl">{getSubjectIcon(assignment.subject)}</span>
+                                                <SubjectIcon subject={assignment.subject} className="text-2xl" />
                                                 <div>
                                                     <Badge variant={assignment.subject.toLowerCase()}>{assignment.subject}</Badge>
                                                     <h3 className="font-semibold text-gray-900 mt-1">{assignment.title}</h3>
@@ -571,7 +562,7 @@ const ManageAssignments = () => {
             {deletingAssignment && (
                 <ConfirmDialog
                     title="Delete Assignment"
-                    message={`Are you sure you want to delete "${deletingAssignment.title}"? This action cannot be undone.`}
+                    message={`Are you sure you want to delete "${deletingAssignment.title}" ? This action cannot be undone.`}
                     onConfirm={handleDeleteAssignment}
                     onCancel={() => setDeletingAssignment(null)}
                 />

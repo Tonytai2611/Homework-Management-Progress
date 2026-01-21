@@ -1,5 +1,8 @@
-const ProgressBar = ({ value, max = 100, color = 'blue', showLabel = true, label, height = 'h-2' }) => {
-    const percentage = Math.min((value / max) * 100, 100)
+const ProgressBar = ({ value, max = 100, progress, color = 'blue', showLabel = true, label, height = 'h-2' }) => {
+    // Support both 'progress' (percentage) and 'value/max' (ratio) props
+    const percentage = progress !== undefined
+        ? (isNaN(progress) ? 0 : Math.min(progress, 100))
+        : Math.min((value / max) * 100, 100)
 
     const colorClasses = {
         blue: 'bg-blue-500',

@@ -79,14 +79,14 @@ const StudentAssignments = () => {
     })
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-8">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-24 md:pb-8">
             <Header />
 
             {/* Page Title */}
-            <div className="bg-white shadow-sm mb-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <h1 className="text-3xl font-bold text-gray-900">My Assignments</h1>
-                    <p className="text-gray-600 mt-1">Track and complete your homework</p>
+            <div className="bg-white shadow-sm mb-4 sm:mb-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Assignments</h1>
+                    <p className="text-gray-600 mt-1 text-sm sm:text-base">Track and complete your homework</p>
                 </div>
             </div>
 
@@ -99,65 +99,49 @@ const StudentAssignments = () => {
                 )}
 
                 {/* Stats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div className="card bg-white">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Total</p>
-                                <p className="text-2xl font-bold text-purple-600">{stats.total}</p>
-                            </div>
-                        </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+                        <p className="text-xs sm:text-sm text-gray-600">Total</p>
+                        <p className="text-xl sm:text-2xl font-bold text-purple-600">{stats.total}</p>
                     </div>
-                    <div className="card bg-white">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Pending</p>
-                                <p className="text-2xl font-bold text-orange-600">{stats.pending}</p>
-                            </div>
-                        </div>
+                    <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+                        <p className="text-xs sm:text-sm text-gray-600">Pending</p>
+                        <p className="text-xl sm:text-2xl font-bold text-orange-600">{stats.pending}</p>
                     </div>
-                    <div className="card bg-white">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">In Progress</p>
-                                <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
-                            </div>
-                        </div>
+                    <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+                        <p className="text-xs sm:text-sm text-gray-600">In Progress</p>
+                        <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.inProgress}</p>
                     </div>
-                    <div className="card bg-white">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Completed</p>
-                                <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
-                            </div>
-                        </div>
+                    <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+                        <p className="text-xs sm:text-sm text-gray-600">Completed</p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.completed}</p>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="card bg-white mb-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                    <div className="flex flex-col space-y-3 sm:space-y-4">
                         {/* Status Filter */}
-                        <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-700">Status:</span>
-                            <div className="flex space-x-2">
+                        <div>
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block">Status:</span>
+                            <div className="flex flex-wrap gap-2">
                                 {['all', 'pending', 'in-progress', 'completed'].map((status) => (
                                     <button
                                         key={status}
                                         onClick={() => setFilter(status)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 ${filter === status
+                                        className={`px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 ${filter === status
                                             ? 'bg-purple-600 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
                                         {status === 'pending' && (
-                                            <MdOutlinePendingActions className={`w-4 h-4 ${filter === status ? 'text-white' : 'text-orange-600'}`} />
+                                            <MdOutlinePendingActions className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filter === status ? 'text-white' : 'text-orange-600'}`} />
                                         )}
                                         {status === 'in-progress' && (
-                                            <GrInProgress className={`w-4 h-4 ${filter === status ? 'text-white' : 'text-blue-600'}`} />
+                                            <GrInProgress className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filter === status ? 'text-white' : 'text-blue-600'}`} />
                                         )}
                                         {status === 'completed' && (
-                                            <IoCheckmarkCircle className={`w-4 h-4 ${filter === status ? 'text-white' : 'text-green-600'}`} />
+                                            <IoCheckmarkCircle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filter === status ? 'text-white' : 'text-green-600'}`} />
                                         )}
                                         <span>{status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}</span>
                                     </button>
@@ -166,12 +150,12 @@ const StudentAssignments = () => {
                         </div>
 
                         {/* Subject Filter */}
-                        <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-700">Subject:</span>
+                        <div>
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block">Subject:</span>
                             <select
                                 value={selectedSubject}
                                 onChange={(e) => setSelectedSubject(e.target.value)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             >
                                 {subjects.map((subject) => (
                                     <option key={subject} value={subject}>
@@ -193,12 +177,12 @@ const StudentAssignments = () => {
 
                 {/* Assignments List */}
                 {!loading && (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {filteredAssignments.length === 0 ? (
-                            <div className="card bg-white text-center py-12">
-                                <span className="text-6xl mb-4 block">📭</span>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No assignments found</h3>
-                                <p className="text-gray-600">Try changing your filters</p>
+                            <div className="bg-white rounded-xl shadow-lg text-center py-8 sm:py-12">
+                                <span className="text-4xl sm:text-6xl mb-4 block">📭</span>
+                                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No assignments found</h3>
+                                <p className="text-sm sm:text-base text-gray-600">Try changing your filters</p>
                             </div>
                         ) : (
                             filteredAssignments.map((assignment) => (

@@ -1,34 +1,25 @@
+import { Link } from 'react-router-dom'
 import Badge from './Badge'
+import { SubjectIcon } from '../../utils/subjectIcons'
 
 const AssignmentCard = ({
     assignment,
-    onStart,
-    onView,
-    showActions = true,
-    compact = false
+    onClick,
+    compact = false,
+    showActions = false
 }) => {
     const {
+        id,
         title,
         subject,
         dueDate,
         due_date,
         status = 'pending',
-        description,
-        link,
         priority = 'medium'
     } = assignment
 
-    // Handle both dueDate and due_date formats
-    const dueDateValue = dueDate || due_date
-
-    const subjectIcons = {
-        Reading: '📖',
-        Writing: '✍️',
-        Listening: '🎧',
-        Speaking: '🗣️',
-        Grammar: '📝',
-        default: '📚'
-    }
+    const dueDateValue = dueDate
+    // Subject icon is now handled by SubjectIcon component
 
     const statusVariants = {
         pending: 'warning',
@@ -42,7 +33,7 @@ const AssignmentCard = ({
         high: 'border-l-4 border-red-400'
     }
 
-    const formatDate = (dateString) => {
+    const getDueDate = (dateString) => {
         const date = new Date(dateString)
         const now = new Date()
         const diffTime = date - now
@@ -54,19 +45,23 @@ const AssignmentCard = ({
         return `Due ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
     }
 
+    const formatStatus = (status) => {
+        return status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)
+    }
+
     if (compact) {
         return (
-            <div className={`card hover:shadow-lg transition-all duration-200 cursor-pointer ${priorityColors[priority]}`}>
+            <div className={`card hover:shadow-lg transition-all duration-200 cursor-pointer ${priorityColors[priority]}`} onClick={onClick}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3 flex-1">
-                        <span className="text-2xl">{subjectIcons[subject] || subjectIcons.default}</span>
+                        <SubjectIcon subject={subject} className="text-2xl" />
                         <div className="flex-1 min-w-0">
                             <h4 className="font-semibold text-gray-900 truncate">{title}</h4>
                             <p className="text-sm text-gray-600">{subject}</p>
                         </div>
                     </div>
                     <Badge variant={statusVariants[status]} size="sm">
-                        {status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
+                        {formatStatus(status)}
                     </Badge>
                 </div>
             </div>
@@ -74,69 +69,55 @@ const AssignmentCard = ({
     }
 
     return (
-        <div className={`card hover:shadow-xl transition-all duration-200 ${priorityColors[priority]}`}>
-            <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-purple-teal rounded-lg flex items-center justify-center text-2xl">
-                        {subjectIcons[subject] || subjectIcons.default}
+        <div className={`card hover:shadow-xl transition-all duration-200 ${priorityColors[priority]} p-3 sm:p-4`}>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0 mb-3">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-purple-teal rounded-lg flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
+                        <SubjectIcon subject={subject} />
                     </div>
-                    <div>
-                        <div className="flex items-center space-x-2">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                             <Badge variant="primary" size="sm">{subject}</Badge>
-                            {priority === 'high' && <Badge variant="danger" size="sm">High Priority</Badge>}
+                            {priority === 'high' && <Badge variant="danger" size="sm">High</Badge>}
                         </div>
-                        <h3 className="font-bold text-gray-900 mt-1">{title}</h3>
+                        <h3 className="font-bold text-gray-900 mt-1 text-sm sm:text-base truncate">{title}</h3>
                     </div>
                 </div>
-                <Badge variant={statusVariants[status]}>
-                    {status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
+                <Badge variant={statusVariants[status]} size="sm">
+                    {formatStatus(status)}
                 </Badge>
             </div>
 
-            {description && (
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
+            {dueDateValue && (
+                <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 mb-3">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="truncate">{getDueDate(dueDateValue)}</span>
+                </div>
             )}
 
-            {link && (
-                <a
-                    href={link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-purple-600 hover:text-purple-700 mb-3 inline-flex items-center"
-                >
-                    <span className="mr-1">🔗</span>
-                    {link.length > 40 ? link.substring(0, 40) + '...' : link}
-                </a>
+            {showActions && (
+                <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-gray-200">
+                    <Link
+                        to={`/student/assignments/${id}`}
+                        className="flex-1 px-3 py-1.5 text-center bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs sm:text-sm font-medium"
+                    >
+                        View Details
+                    </Link>
+                    {status !== 'completed' && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                onClick?.()
+                            }}
+                            className="flex-1 px-3 py-1.5 text-center border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors text-xs sm:text-sm font-medium"
+                        >
+                            Update Status
+                        </button>
+                    )}
+                </div>
             )}
-
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <span className={`text-sm font-medium ${formatDate(dueDateValue).includes('Overdue') ? 'text-red-600' :
-                    formatDate(dueDateValue).includes('today') ? 'text-orange-600' :
-                        'text-gray-600'
-                    }`}>
-                    📅 {formatDate(dueDateValue)}
-                </span>
-
-                {showActions && (
-                    <div className="flex space-x-2">
-                        {status === 'completed' ? (
-                            <button
-                                onClick={() => onView && onView(assignment)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                            >
-                                View →
-                            </button>
-                        ) : (
-                            <button
-                                onClick={() => onStart && onStart(assignment)}
-                                className="px-4 py-2 text-sm font-medium text-white bg-gradient-purple-teal rounded-lg hover:shadow-lg transition-all"
-                            >
-                                {status === 'in-progress' ? 'Continue' : 'Start'} →
-                            </button>
-                        )}
-                    </div>
-                )}
-            </div>
         </div>
     )
 }

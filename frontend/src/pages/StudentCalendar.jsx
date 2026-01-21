@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
-import Badge from '../components/shared/Badge'
+import { useAuth } from '../contexts/AuthContext'
+import { studentsAPI, assignmentsAPI } from '../api/assignments'
 import Header from '../components/Header'
-import { assignmentsAPI } from '../api/assignments'
+import Badge from '../components/shared/Badge'
+import { SubjectIcon } from '../utils/subjectIcons'
 import AssignmentDetailModal from '../components/AssignmentDetailModal'
 
 const StudentCalendar = () => {
@@ -100,32 +102,32 @@ const StudentCalendar = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-8">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-24 md:pb-8">
             <Header />
 
             {/* Page Title */}
-            <div className="bg-white shadow-sm mb-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Assignment Calendar</h1>
-                    <p className="text-gray-600 mt-1">View your assignments by date</p>
+            <div className="bg-white shadow-sm mb-4 sm:mb-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Assignment Calendar</h1>
+                    <p className="text-gray-600 mt-1 text-sm sm:text-base">View your assignments by date</p>
                 </div>
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="card bg-white">
+                <div className="card bg-white p-3 sm:p-6">
                     {/* Calendar Header */}
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">{monthName}</h2>
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <h2 className="text-lg sm:text-2xl font-bold text-gray-900">{monthName}</h2>
                         <div className="flex space-x-2">
                             <button
                                 onClick={prevMonth}
-                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm sm:text-base"
                             >
                                 ←
                             </button>
                             <button
                                 onClick={nextMonth}
-                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm sm:text-base"
                             >
                                 →
                             </button>
@@ -145,11 +147,12 @@ const StudentCalendar = () => {
                     ) : (
                         <>
                             {/* Calendar Grid */}
-                            <div className="grid grid-cols-7 gap-2">
+                            <div className="grid grid-cols-7 gap-1 sm:gap-2">
                                 {/* Day headers */}
-                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                                    <div key={day} className="text-center font-semibold text-gray-700 py-2">
-                                        {day}
+                                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+                                    <div key={`${day}-${index}`} className="text-center font-semibold text-gray-700 py-1 sm:py-2 text-xs sm:text-sm">
+                                        <span className="hidden sm:inline">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}</span>
+                                        <span className="sm:hidden">{day}</span>
                                     </div>
                                 ))}
 
@@ -168,29 +171,46 @@ const StudentCalendar = () => {
                                     return (
                                         <div
                                             key={day}
-                                            className={`aspect-square border rounded-lg p-2 ${today ? 'bg-purple-50 border-purple-300' : 'border-gray-200'
+                                            className={`min-h-[60px] sm:min-h-[80px] md:aspect-square border rounded-lg p-1 sm:p-2 ${today ? 'bg-purple-50 border-purple-300' : 'border-gray-200'
                                                 } hover:shadow-md transition-shadow`}
                                         >
-                                            <div className={`text-sm font-semibold mb-1 ${today ? 'text-purple-600' : 'text-gray-700'
+                                            <div className={`text-xs sm:text-sm font-semibold mb-1 ${today ? 'text-purple-600' : 'text-gray-700'
                                                 }`}>
                                                 {day}
                                             </div>
-                                            <div className="space-y-1">
-                                                {dayAssignments.slice(0, 2).map((assignment, idx) => (
+                                            <div className="space-y-0.5 sm:space-y-1">
+                                                {dayAssignments.slice(0, 1).map((assignment, idx) => (
                                                     <div
                                                         key={idx}
                                                         onClick={() => setSelectedAssignment(assignment)}
-                                                        className={`text-xs px-1.5 py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(assignment.subject)}`}
+                                                        className={`text-xs px-1 py-0.5 sm:px-1.5 sm:py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(assignment.subject)}`}
                                                     >
                                                         <div className="flex items-center space-x-1">
-                                                            <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot(assignment.status)}`}></span>
-                                                            <span className="truncate flex-1">{assignment.title}</span>
+                                                            <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full flex-shrink-0 ${getStatusDot(assignment.status)}`}></span>
+                                                            <span className="truncate flex-1 text-[10px] sm:text-xs">{assignment.title}</span>
                                                         </div>
                                                     </div>
                                                 ))}
+                                                {/* Show second assignment only on larger screens */}
+                                                {dayAssignments.length > 1 && (
+                                                    <div
+                                                        onClick={() => setSelectedAssignment(dayAssignments[1])}
+                                                        className={`hidden sm:block text-xs px-1.5 py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(dayAssignments[1].subject)}`}
+                                                    >
+                                                        <div className="flex items-center space-x-1">
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot(dayAssignments[1].status)}`}></span>
+                                                            <span className="truncate flex-1">{dayAssignments[1].title}</span>
+                                                        </div>
+                                                    </div>
+                                                )}
                                                 {dayAssignments.length > 2 && (
-                                                    <div className="text-xs text-gray-500 px-1">
+                                                    <div className="hidden sm:block text-xs text-gray-500 px-1">
                                                         +{dayAssignments.length - 2} more
+                                                    </div>
+                                                )}
+                                                {dayAssignments.length > 1 && (
+                                                    <div className="sm:hidden text-[10px] text-gray-500 px-0.5">
+                                                        +{dayAssignments.length - 1}
                                                     </div>
                                                 )}
                                             </div>
@@ -200,28 +220,53 @@ const StudentCalendar = () => {
                             </div>
 
                             {/* Legend */}
-                            <div className="mt-6 pt-6 border-t border-gray-200">
-                                <h3 className="font-semibold text-gray-900 mb-3">Subjects</h3>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <Badge variant="primary">📖 Reading</Badge>
-                                    <Badge variant="success">✍️ Writing</Badge>
-                                    <Badge variant="info">👂 Listening</Badge>
-                                    <Badge variant="warning">🗣️ Speaking</Badge>
-                                    <Badge variant="danger">📝 Grammar</Badge>
+                            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
+                                <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Subjects</h3>
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+                                    <Badge variant="primary">
+                                        <div className="flex items-center space-x-2">
+                                            <SubjectIcon subject="Reading" className="text-sm" />
+                                            <span className="hidden sm:inline">Reading</span>
+                                        </div>
+                                    </Badge>
+                                    <Badge variant="success">
+                                        <div className="flex items-center space-x-2">
+                                            <SubjectIcon subject="Writing" className="text-sm" />
+                                            <span className="hidden sm:inline">Writing</span>
+                                        </div>
+                                    </Badge>
+                                    <Badge variant="info">
+                                        <div className="flex items-center space-x-2">
+                                            <SubjectIcon subject="Listening" className="text-sm" />
+                                            <span className="hidden sm:inline">Listening</span>
+                                        </div>
+                                    </Badge>
+                                    <Badge variant="warning">
+                                        <div className="flex items-center space-x-2">
+                                            <SubjectIcon subject="Speaking" className="text-sm" />
+                                            <span className="hidden sm:inline">Speaking</span>
+                                        </div>
+                                    </Badge>
+                                    <Badge variant="danger">
+                                        <div className="flex items-center space-x-2">
+                                            <SubjectIcon subject="Grammar" className="text-sm" />
+                                            <span className="hidden sm:inline">Grammar</span>
+                                        </div>
+                                    </Badge>
                                 </div>
-                                <h3 className="font-semibold text-gray-900 mb-3">Status</h3>
-                                <div className="flex flex-wrap gap-3">
-                                    <div className="flex items-center space-x-2">
-                                        <span className="w-3 h-3 rounded-full bg-gray-400"></span>
-                                        <span className="text-sm text-gray-700">Pending</span>
+                                <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Status</h3>
+                                <div className="flex flex-wrap gap-2 sm:gap-3">
+                                    <div className="flex items-center space-x-1 sm:space-x-2">
+                                        <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-400"></span>
+                                        <span className="text-xs sm:text-sm text-gray-700">Pending</span>
                                     </div>
-                                    <div className="flex items-center space-x-2">
-                                        <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                                        <span className="text-sm text-gray-700">In Progress</span>
+                                    <div className="flex items-center space-x-1 sm:space-x-2">
+                                        <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500"></span>
+                                        <span className="text-xs sm:text-sm text-gray-700">In Progress</span>
                                     </div>
-                                    <div className="flex items-center space-x-2">
-                                        <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                                        <span className="text-sm text-gray-700">Completed</span>
+                                    <div className="flex items-center space-x-1 sm:space-x-2">
+                                        <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500"></span>
+                                        <span className="text-xs sm:text-sm text-gray-700">Completed</span>
                                     </div>
                                 </div>
                             </div>

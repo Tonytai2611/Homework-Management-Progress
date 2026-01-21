@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { studentsAPI, assignmentsAPI } from '../api/assignments'
 import ProgressBar from '../components/shared/ProgressBar'
 import Badge from '../components/shared/Badge'
+import { SubjectIcon } from '../utils/subjectIcons'
 
 const AdminDashboard = () => {
     const { user, signout } = useAuth()
@@ -73,7 +74,7 @@ const AdminDashboard = () => {
         if (!studentAssignmentId) return
 
         try {
-            await assignmentsAPI.adminUpdateStatus(studentAssignmentId, status, 'Marked by teacher')
+            await studentsAPI.adminUpdateStatus(studentAssignmentId, status, 'Marked by teacher')
 
             showToast('Assignment status updated successfully!', 'success')
 
@@ -280,15 +281,22 @@ const AdminDashboard = () => {
 
                                     {/* Middle: Subject Progress */}
                                     <div className="space-y-2">
-                                        {student.bySubject?.map((subject) => (
-                                            <div key={subject.name}>
-                                                <div className="flex justify-between text-xs mb-1">
-                                                    <span className="font-medium text-gray-700">{subject.name}</span>
-                                                    <span className="text-gray-600">{formatPercentage(subject.progress)}%</span>
+                                        {student.bySubject?.map((subject) => {
+                                            // Safely calculate progress percentage
+                                            const progress = subject.progress ??
+                                                (subject.completed && subject.assignments ?
+                                                    Math.round((subject.completed / subject.assignments) * 100) : 0)
+
+                                            return (
+                                                <div key={subject.name}>
+                                                    <div className="flex justify-between text-xs mb-1">
+                                                        <span className="font-medium text-gray-700">{subject.name}</span>
+                                                        <span className="text-gray-600">{formatPercentage(progress)}%</span>
+                                                    </div>
+                                                    <ProgressBar progress={progress} color={getSubjectColor(subject.name)} height="h-2" />
                                                 </div>
-                                                <ProgressBar progress={subject.progress || 0} color={getSubjectColor(subject.name)} height="h-2" />
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
                                     </div>
 
                                     {/* Right: Recent Assignments */}
@@ -297,11 +305,7 @@ const AdminDashboard = () => {
                                         <div className="space-y-2">
                                             {student.recentAssignments?.slice(0, 3).map((assignment) => (
                                                 <div key={assignment.id} className="flex items-center space-x-2 text-sm">
-                                                    <span className="text-lg">
-                                                        {assignment.subject === 'Reading' ? '📖' :
-                                                            assignment.subject === 'Writing' ? '✏️' :
-                                                                assignment.subject === 'Listening' ? '🎧' : '📝'}
-                                                    </span>
+                                                    <SubjectIcon subject={assignment.subject} className="text-lg" />
                                                     <span className="flex-1 text-gray-700 truncate">{assignment.title}</span>
                                                     <span className={`w-2 h-2 rounded-full ${assignment.status === 'completed' ? 'bg-green-500' :
                                                         assignment.status === 'in-progress' ? 'bg-blue-500' : 'bg-gray-300'

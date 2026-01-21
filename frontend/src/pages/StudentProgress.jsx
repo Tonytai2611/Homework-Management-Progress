@@ -3,6 +3,7 @@ import ProgressBar from '../components/shared/ProgressBar'
 import Badge from '../components/shared/Badge'
 import Header from '../components/Header'
 import { assignmentsAPI } from '../api/assignments'
+import { SubjectIcon } from '../utils/subjectIcons'
 
 const StudentProgress = () => {
     const [progressData, setProgressData] = useState(null)
@@ -57,44 +58,44 @@ const StudentProgress = () => {
     const { overall, bySubject, weekly } = progressData || {}
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-8">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-24 md:pb-8">
             <Header />
 
             {/* Page Title */}
-            <div className="bg-white shadow-sm mb-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <h1 className="text-3xl font-bold text-gray-900">My Progress</h1>
-                    <p className="text-gray-600 mt-1">Track your learning journey</p>
+            <div className="bg-white shadow-sm mb-4 sm:mb-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Progress</h1>
+                    <p className="text-gray-600 mt-1 text-sm sm:text-base">Track your learning journey</p>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 {/* Overall Progress */}
-                <div className="card bg-gradient-purple-teal text-white">
-                    <h2 className="text-2xl font-bold mb-4">Overall Progress</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <p className="text-purple-100 text-sm">Total Assignments</p>
-                            <p className="text-3xl font-bold">{overall?.total || 0}</p>
+                <div className="card bg-gradient-purple-teal text-white p-4 sm:p-6">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-4">Overall Progress</h2>
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                            <p className="text-purple-100 text-xs sm:text-sm">Total Assignments</p>
+                            <p className="text-2xl sm:text-3xl font-bold">{overall?.total || 0}</p>
                         </div>
-                        <div>
-                            <p className="text-purple-100 text-sm">Completed</p>
-                            <p className="text-3xl font-bold">{overall?.completed || 0}</p>
+                        <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                            <p className="text-purple-100 text-xs sm:text-sm">Completed</p>
+                            <p className="text-2xl sm:text-3xl font-bold">{overall?.completed || 0}</p>
                         </div>
-                        <div>
-                            <p className="text-purple-100 text-sm">In Progress</p>
-                            <p className="text-3xl font-bold">{overall?.in_progress || 0}</p>
+                        <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                            <p className="text-purple-100 text-xs sm:text-sm">In Progress</p>
+                            <p className="text-2xl sm:text-3xl font-bold">{overall?.in_progress || 0}</p>
                         </div>
-                        <div>
-                            <p className="text-purple-100 text-sm">Completion Rate</p>
-                            <p className="text-3xl font-bold">{overall?.completion_rate || 0}%</p>
+                        <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                            <p className="text-purple-100 text-xs sm:text-sm">Completion Rate</p>
+                            <p className="text-2xl sm:text-3xl font-bold">{overall?.completion_rate || 0}%</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Progress by Subject */}
-                <div className="card bg-white">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">Progress by Subject</h3>
+                <div className="card bg-white p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Progress by Subject</h3>
                     <div className="space-y-4">
                         {bySubject && bySubject.length > 0 ? (
                             bySubject.map((subject) => {
@@ -131,7 +132,10 @@ const StudentProgress = () => {
                                 return (
                                     <div key={subject.subject}>
                                         <div className="flex justify-between mb-2">
-                                            <span className="font-medium text-gray-900">{subject.subject}</span>
+                                            <div className="flex items-center space-x-2">
+                                                <SubjectIcon subject={subject.subject} className="text-xl" />
+                                                <span className="font-medium text-gray-900">{subject.subject}</span>
+                                            </div>
                                             <div className="flex items-center space-x-3">
                                                 <span className="text-gray-600">{completed}/{total}</span>
                                                 <span className={`text-lg font-bold ${getTextColorClass(subjectColor)}`}>
@@ -157,12 +161,12 @@ const StudentProgress = () => {
 
                 {/* Weekly Progress */}
                 {weekly && weekly.length > 0 && (
-                    <div className="card bg-white">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</h3>
+                    <div className="card bg-white p-4 sm:p-6">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Weekly Progress</h3>
                         <div className="space-y-3">
                             {weekly.map((week) => (
-                                <div key={week.week} className="flex justify-between items-center">
-                                    <span className="text-gray-700">Week of {new Date(week.week).toLocaleDateString()}</span>
+                                <div key={week.week} className="flex justify-between items-center flex-wrap gap-2">
+                                    <span className="text-sm sm:text-base text-gray-700">Week of {new Date(week.week).toLocaleDateString()}</span>
                                     <Badge variant="completed">{week.completed} completed</Badge>
                                 </div>
                             ))}
@@ -171,30 +175,30 @@ const StudentProgress = () => {
                 )}
 
                 {/* Recent Achievements */}
-                <div className="card bg-white">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Achievements</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="card bg-white p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Recent Achievements</h3>
+                    <div className="grid grid-cols-1 gap-3 sm:gap-4">
                         {overall?.completed > 0 ? (
                             <>
                                 <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
-                                    <span className="text-3xl">🏆</span>
+                                    <span className="text-2xl sm:text-3xl">🏆</span>
                                     <div>
-                                        <p className="font-semibold text-gray-900">First Assignment</p>
-                                        <p className="text-sm text-gray-600">Completed your first assignment!</p>
+                                        <p className="font-semibold text-gray-900 text-sm sm:text-base">First Assignment</p>
+                                        <p className="text-xs sm:text-sm text-gray-600">Completed your first assignment!</p>
                                     </div>
                                 </div>
                                 {overall.completed >= 5 && (
                                     <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                                        <span className="text-3xl">⭐</span>
+                                        <span className="text-2xl sm:text-3xl">⭐</span>
                                         <div>
-                                            <p className="font-semibold text-gray-900">5 Assignments</p>
-                                            <p className="text-sm text-gray-600">Completed 5 assignments!</p>
+                                            <p className="font-semibold text-gray-900 text-sm sm:text-base">5 Assignments</p>
+                                            <p className="text-xs sm:text-sm text-gray-600">Completed 5 assignments!</p>
                                         </div>
                                     </div>
                                 )}
                             </>
                         ) : (
-                            <p className="text-gray-500 col-span-2 text-center py-4">
+                            <p className="text-gray-500 text-center py-4 text-sm sm:text-base">
                                 Complete assignments to earn achievements!
                             </p>
                         )}
