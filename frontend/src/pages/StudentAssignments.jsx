@@ -72,11 +72,20 @@ const StudentAssignments = () => {
         completed: assignments.filter(a => a.status === 'completed').length
     }
 
-    const filteredAssignments = assignments.filter(assignment => {
-        const matchesFilter = filter === 'all' || assignment.status === filter
-        const matchesSubject = selectedSubject === 'all' || assignment.subject === selectedSubject
-        return matchesFilter && matchesSubject
-    })
+    const filteredAssignments = assignments
+        .filter(assignment => {
+            const matchesFilter = filter === 'all' || assignment.status === filter
+            const matchesSubject = selectedSubject === 'all' || assignment.subject === selectedSubject
+            return matchesFilter && matchesSubject
+        })
+        .sort((a, b) => {
+            const statusPriority = { 'pending': 0, 'in-progress': 1, 'completed': 2 }
+            const priorityA = statusPriority[a.status] ?? 3
+            const priorityB = statusPriority[b.status] ?? 3
+
+            if (priorityA !== priorityB) return priorityA - priorityB
+            return new Date(a.due_date || a.dueDate) - new Date(b.due_date || b.dueDate)
+        });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 pb-24 md:pb-8">
@@ -189,9 +198,8 @@ const StudentAssignments = () => {
                                 <AssignmentCard
                                     key={assignment.id}
                                     assignment={assignment}
-                                    onClick={() => handleViewAssignment(assignment)}
-                                    onView={() => handleViewAssignment(assignment)}
-                                    showActions={true}
+                                    onStart={handleStartAssignment}
+                                    onView={handleViewAssignment}
                                 />
                             ))
                         )}

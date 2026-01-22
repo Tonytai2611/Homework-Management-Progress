@@ -396,8 +396,9 @@ const ManageAssignments = () => {
                             <div className="space-y-2">
                                 {formData.tasks.map((task) => (
                                     <div key={task.id} className="flex items-center space-x-2">
-                                        <span className="flex-1 px-3 py-2 bg-gray-50 rounded-lg text-sm">
-                                            {task.text}
+                                        <span className="flex-1 px-3 py-2 bg-gray-50 rounded-lg text-sm flex items-center gap-2">
+                                            <i className="fi fi-rr-check text-green-500"></i>
+                                            <span>{task.text}</span>
                                         </span>
                                         <button
                                             type="button"

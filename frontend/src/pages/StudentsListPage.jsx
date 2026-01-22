@@ -147,7 +147,6 @@ const StudentsListPage = () => {
                                         <LocalFireDepartmentIcon className="text-red-600" sx={{ fontSize: 24 }} />
                                         <p className="text-2xl font-bold text-orange-600">5</p>
                                     </div>
-                                    <p className="text-sm text-gray-600">day streak</p>
                                 </div>
                                 <div className="text-center p-3 bg-yellow-50 rounded-lg">
                                     <p className="text-2xl font-bold text-yellow-600">⭐ 1850</p>

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
-import { studentsAPI, assignmentsAPI } from '../api/assignments'
-import Header from '../components/Header'
 import Badge from '../components/shared/Badge'
-import { SubjectIcon } from '../utils/subjectIcons'
+import Header from '../components/Header'
+import { assignmentsAPI } from '../api/assignments'
 import AssignmentDetailModal from '../components/AssignmentDetailModal'
 
 const StudentCalendar = () => {
@@ -223,36 +221,11 @@ const StudentCalendar = () => {
                             <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
                                 <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Subjects</h3>
                                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-                                    <Badge variant="primary">
-                                        <div className="flex items-center space-x-2">
-                                            <SubjectIcon subject="Reading" className="text-sm" />
-                                            <span className="hidden sm:inline">Reading</span>
-                                        </div>
-                                    </Badge>
-                                    <Badge variant="success">
-                                        <div className="flex items-center space-x-2">
-                                            <SubjectIcon subject="Writing" className="text-sm" />
-                                            <span className="hidden sm:inline">Writing</span>
-                                        </div>
-                                    </Badge>
-                                    <Badge variant="info">
-                                        <div className="flex items-center space-x-2">
-                                            <SubjectIcon subject="Listening" className="text-sm" />
-                                            <span className="hidden sm:inline">Listening</span>
-                                        </div>
-                                    </Badge>
-                                    <Badge variant="warning">
-                                        <div className="flex items-center space-x-2">
-                                            <SubjectIcon subject="Speaking" className="text-sm" />
-                                            <span className="hidden sm:inline">Speaking</span>
-                                        </div>
-                                    </Badge>
-                                    <Badge variant="danger">
-                                        <div className="flex items-center space-x-2">
-                                            <SubjectIcon subject="Grammar" className="text-sm" />
-                                            <span className="hidden sm:inline">Grammar</span>
-                                        </div>
-                                    </Badge>
+                                    <Badge variant="primary"><span className="hidden sm:inline">📖 </span>Reading</Badge>
+                                    <Badge variant="success"><span className="hidden sm:inline">✍️ </span>Writing</Badge>
+                                    <Badge variant="info"><span className="hidden sm:inline">👂 </span>Listening</Badge>
+                                    <Badge variant="warning"><span className="hidden sm:inline">🗣️ </span>Speaking</Badge>
+                                    <Badge variant="danger"><span className="hidden sm:inline">📝 </span>Grammar</Badge>
                                 </div>
                                 <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Status</h3>
                                 <div className="flex flex-wrap gap-2 sm:gap-3">

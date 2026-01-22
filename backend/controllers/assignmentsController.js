@@ -342,6 +342,23 @@ export const updateAssignmentStatus = async (req, res) => {
             result = data
         }
 
+        // --- NEW: Add 50 points if Completed ---
+        if (status === 'completed' && (!existing || existing.status !== 'completed')) {
+            const { data: user } = await supabase
+                .from('users')
+                .select('points')
+                .eq('id', studentId)
+                .single()
+
+            if (user) {
+                await supabase
+                    .from('users')
+                    .update({ points: (user.points || 0) + 50 })
+                    .eq('id', studentId)
+            }
+        }
+        // ---------------------------------------
+
         res.json({
             success: true,
             message: 'Assignment status updated',
@@ -382,6 +399,25 @@ export const adminUpdateSubmissionStatus = async (req, res) => {
             .single()
 
         if (error) throw error
+
+        // --- NEW: Add 50 points if Completed ---
+        if (status === 'completed') {
+            const studentId = data.student_id
+
+            const { data: user } = await supabase
+                .from('users')
+                .select('points')
+                .eq('id', studentId)
+                .single()
+
+            if (user) {
+                await supabase
+                    .from('users')
+                    .update({ points: (user.points || 0) + 50 })
+                    .eq('id', studentId)
+            }
+        }
+        // ---------------------------------------
 
         res.json({
             success: true,

@@ -16,7 +16,9 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true)
     const [selectedStudent, setSelectedStudent] = useState(null)
     const [editingPoints, setEditingPoints] = useState({ studentId: null, points: 0 })
-    const [editingStreak, setEditingStreak] = useState({ studentId: null, streak: 0 })
+
+
+
 
 
     useEffect(() => {
@@ -140,44 +142,7 @@ const AdminDashboard = () => {
         }
     }
 
-    const handleEditStreak = (student, currentStreak) => {
-        setEditingStreak({
-            studentId: student.id,
-            streak: currentStreak || 0
-        })
-    }
 
-    const handleSaveStreak = async () => {
-        if (!editingStreak.studentId) return
-
-        try {
-            await studentsAPI.updateStreak(editingStreak.studentId, Number(editingStreak.streak))
-            showToast('Streak updated successfully!', 'success')
-
-            // Update local state
-            setStudents(prev => prev.map(s => {
-                if (s.student.id === editingStreak.studentId) {
-                    return {
-                        ...s,
-                        stats: {
-                            ...s.stats,
-                            weeklyStreak: Number(editingStreak.streak)
-                        },
-                        student: {
-                            ...s.student,
-                            streak: Number(editingStreak.streak)
-                        }
-                    }
-                }
-                return s
-            }))
-
-            setEditingStreak({ studentId: null, streak: 0 })
-        } catch (err) {
-            console.error('Failed to update streak:', err)
-            showToast('Failed to update streak', 'error')
-        }
-    }
 
 
     return (
@@ -330,27 +295,6 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-center">
-                                            {editingStreak.studentId === student.student.id ? (
-                                                <div className="flex items-center space-x-1">
-                                                    <input
-                                                        type="number"
-                                                        value={editingStreak.streak}
-                                                        onChange={(e) => setEditingStreak(prev => ({ ...prev, streak: e.target.value }))}
-                                                        className="w-16 px-2 py-1 text-sm border border-purple-300 rounded focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                                        autoFocus
-                                                    />
-                                                    <button onClick={handleSaveStreak} className="text-green-600 hover:text-green-800">✓</button>
-                                                    <button onClick={() => setEditingStreak({ studentId: null, streak: 0 })} className="text-red-600 hover:text-red-800">×</button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center text-sm text-gray-600 group cursor-pointer" onClick={() => handleEditStreak(student.student, student.stats?.weeklyStreak)}>
-                                                    <LocalFireDepartmentIcon className="text-red-600 mr-1" sx={{ fontSize: 18 }} />
-                                                    {student.stats?.weeklyStreak || 0} week streak
-                                                    <span className="ml-1 opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity">✎</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="text-center">
                                             {editingPoints.studentId === student.student.id ? (
                                                 <div className="flex items-center space-x-1">
                                                     <input
@@ -479,63 +423,54 @@ const AdminDashboard = () => {
                                     <p className="text-sm opacity-90">Total Tasks</p>
                                     <p className="text-3xl font-bold">{selectedStudent.stats?.total || 0}</p>
                                 </div>
-                                <div className="card bg-orange-50">
-                                    <p className="text-sm text-gray-600">Streak</p>
-                                    <div className="flex items-baseline">
-                                        <div className="flex items-center">
-                                            <LocalFireDepartmentIcon className="text-red-600 mr-2" sx={{ fontSize: 32 }} />
-                                            <p className="text-3xl font-bold text-orange-600">{selectedStudent.stats?.weeklyStreak || 0}</p>
-                                        </div>
-                                        <span className="ml-1 text-sm text-orange-600">weeks 🔥</span>
-                                    </div>
-                                </div>
-                                <div className="card bg-green-50">
-                                    <p className="text-sm text-gray-600">Completed</p>
-                                    <p className="text-3xl font-bold text-green-600">{selectedStudent.stats?.completed || 0}</p>
-                                </div>
-                                <div className="card bg-blue-50">
-                                    <p className="text-sm text-gray-600">Pending</p>
-                                    <p className="text-3xl font-bold text-blue-600">{selectedStudent.stats?.pending || 0}</p>
-                                </div>
-                                <div className="card bg-purple-50">
-                                    <p className="text-sm text-gray-600">Completion</p>
-                                    <p className="text-3xl font-bold text-purple-600">
-                                        {formatPercentage(selectedStudent.stats?.completionRate)}%
-                                    </p>
-                                </div>
-                            </div>
 
-                            {/* All assignments */}
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-4">All Assignments ({selectedStudent.recentAssignments?.length || 0})</h3>
-                                <div className="space-y-3">
-                                    {selectedStudent.recentAssignments?.map((assignment) => (
-                                        <div key={assignment.id} className="border border-gray-200 rounded-lg p-4 hover:border-purple-200 transition-colors">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
-                                                    <p className="text-sm text-gray-600">{assignment.subject}</p>
-                                                </div>
-                                                <div className="flex items-center space-x-3">
-                                                    <Badge variant={assignment.status === 'completed' ? 'completed' : 'pending'}>
-                                                        {assignment.status}
-                                                    </Badge>
-                                                    {assignment.status !== 'completed' && (
-                                                        <button
-                                                            onClick={() => handleUpdateStatus(assignment.studentAssignmentId, 'completed')}
-                                                            className="p-1 rounded-full text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
-                                                            title="Mark as Completed"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                        </button>
-                                                    )}
-                                                </div>
+                            </div>
+                            <div className="card bg-green-50">
+                                <p className="text-sm text-gray-600">Completed</p>
+                                <p className="text-3xl font-bold text-green-600">{selectedStudent.stats?.completed || 0}</p>
+                            </div>
+                            <div className="card bg-blue-50">
+                                <p className="text-sm text-gray-600">Pending</p>
+                                <p className="text-3xl font-bold text-blue-600">{selectedStudent.stats?.pending || 0}</p>
+                            </div>
+                            <div className="card bg-purple-50">
+                                <p className="text-sm text-gray-600">Completion</p>
+                                <p className="text-3xl font-bold text-purple-600">
+                                    {formatPercentage(selectedStudent.stats?.completionRate)}%
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* All assignments */}
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">All Assignments ({selectedStudent.recentAssignments?.length || 0})</h3>
+                            <div className="space-y-3">
+                                {selectedStudent.recentAssignments?.map((assignment) => (
+                                    <div key={assignment.id} className="border border-gray-200 rounded-lg p-4 hover:border-purple-200 transition-colors">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
+                                                <p className="text-sm text-gray-600">{assignment.subject}</p>
+                                            </div>
+                                            <div className="flex items-center space-x-3">
+                                                <Badge variant={assignment.status === 'completed' ? 'completed' : 'pending'}>
+                                                    {assignment.status}
+                                                </Badge>
+                                                {assignment.status !== 'completed' && (
+                                                    <button
+                                                        onClick={() => handleUpdateStatus(assignment.studentAssignmentId, 'completed')}
+                                                        className="p-1 rounded-full text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+                                                        title="Mark as Completed"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

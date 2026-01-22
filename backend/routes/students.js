@@ -5,7 +5,6 @@ import {
     getDashboardStats,
     getMyDetails,
     updateStudentPoints,
-    updateStudentStreak
 } from '../controllers/studentsController.js'
 import { authenticateToken, requireAdmin } from '../middleware/auth.js'
 
@@ -129,6 +128,5 @@ router.put('/:id/points', authenticateToken, requireAdmin, updateStudentPoints)
  *       200:
  *         description: Streak updated
  */
-router.put('/:id/streak', authenticateToken, requireAdmin, updateStudentStreak)
 
 export default router

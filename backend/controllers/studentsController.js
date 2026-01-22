@@ -7,7 +7,7 @@ export const getAllStudents = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('users')
-            .select('id, email, full_name, level, points, streak, created_at')
+            .select('id, email, full_name, level, created_at')
             .eq('role', 'student')
             .order('created_at', { ascending: false })
 
@@ -60,35 +60,22 @@ export const getStudentDetails = async (req, res) => {
             .eq('role', 'student')
             .single()
 
-        if (studentError) {
-            console.error('Error fetching student:', studentError)
-        }
-
         if (studentError || !student) {
-            console.log('Student not found for ID:', id)
             return res.status(404).json({
                 success: false,
                 message: 'Student not found'
             })
         }
 
-        console.log('Student found:', student.email)
-
-        // Get student assignments (without join first to be safe)
-        console.log('Fetching student assignments...')
+        // Get student assignments
         const { data: studentAssignments, error: saError } = await supabase
             .from('student_assignments')
             .select('*')
             .eq('student_id', id)
 
-        if (saError) {
-            console.error('Error fetching student_assignments:', saError)
-            throw saError
-        }
+        if (saError) throw saError
 
-        console.log('Student assignments fetched:', studentAssignments.length)
-
-        // Get assignment details manually to avoid relation errors
+        // Get assignment details
         const assignmentIds = studentAssignments.map(sa => sa.assignment_id)
         let assignments = []
 
@@ -98,12 +85,8 @@ export const getStudentDetails = async (req, res) => {
                 .select('*')
                 .in('id', assignmentIds)
 
-            if (adError) {
-                console.error('Error fetching assignment details:', adError)
-                throw adError
-            }
+            if (adError) throw adError
 
-            // Merge details back
             assignments = studentAssignments.map(sa => {
                 const detail = assignmentDetails.find(a => a.id === sa.assignment_id)
                 return {
@@ -111,17 +94,13 @@ export const getStudentDetails = async (req, res) => {
                     assignment: detail || { title: 'Unknown Assignment', subject: 'Other' }
                 }
             })
-        } else {
-            assignments = []
         }
 
-        // --- Weekly Streak Calculation (Weekly Commitment Streak) ---
-        // Logic: Did the student complete AT LEAST ONE assignment in the week?
+        // Streak Calculation
         const completedDates = assignments
             .filter(a => a.status === 'completed' && a.completed_at)
             .map(a => new Date(a.completed_at))
 
-        // Helper to get Year-Week string (e.g., "2026-W03")
         const getWeekKey = (date) => {
             const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
             const dayNum = d.getUTCDay() || 7
@@ -131,65 +110,41 @@ export const getStudentDetails = async (req, res) => {
             return `${year}-W${String(week).padStart(2, '0')}`
         }
 
-        // Get set of weeks with activity
         const activeWeeks = new Set(completedDates.map(getWeekKey))
-
-        // --- FINAL IMPLEMENTATION ---
         let streak = 0
         const now = new Date()
         const currentWK = getWeekKey(now)
-
-        const lastWeekDate = new Date(now)
-        lastWeekDate.setDate(lastWeekDate.getDate() - 7)
-        const lastWK = getWeekKey(lastWeekDate)
+        const lastWK = getWeekKey(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000))
 
         let anchorDate = null
-
         if (activeWeeks.has(currentWK)) {
             streak = 1
-            anchorDate = new Date(now)
+            anchorDate = now
         } else if (activeWeeks.has(lastWK)) {
             streak = 1
-            anchorDate = new Date(lastWeekDate)
-        } else {
-            streak = 0
+            anchorDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
         }
 
         if (streak > 0) {
-            // Count backwards from anchorDate - 7 days
             let d = new Date(anchorDate)
-            // Use a safety counter to prevent infinite loops (e.g. max 52 weeks)
-            let safety = 0
-            while (safety < 100) {
+            while (true) {
                 d.setDate(d.getDate() - 7)
-                if (activeWeeks.has(getWeekKey(d))) {
-                    streak++
-                } else {
-                    break
-                }
-                safety++
+                if (activeWeeks.has(getWeekKey(d))) streak++
+                else break
             }
         }
 
-        // Stats calculation
         const total = assignments.length
         const completed = assignments.filter(a => a.status === 'completed').length
         const pending = assignments.filter(a => a.status === 'pending').length
         const inProgress = assignments.filter(a => a.status === 'in-progress').length
 
-        // Calculate by subject
         const subjectStats = {}
         assignments.forEach(sa => {
-            if (!sa.assignment) return // Skip if no assignment details
-
-            const subject = sa.assignment.subject || 'Other'
-            if (!subjectStats[subject]) {
-                subjectStats[subject] = { total: 0, completed: 0 }
-            }
+            const subject = sa.assignment?.subject || 'Other'
+            if (!subjectStats[subject]) subjectStats[subject] = { total: 0, completed: 0 }
             subjectStats[subject].total++
-            if (sa.status === 'completed') {
-                subjectStats[subject].completed++
-            }
+            if (sa.status === 'completed') subjectStats[subject].completed++
         })
 
         const bySubject = Object.entries(subjectStats).map(([subject, stats]) => ({
@@ -208,7 +163,6 @@ export const getStudentDetails = async (req, res) => {
                     fullName: student.full_name,
                     level: student.level,
                     points: student.points,
-                    streak: student.streak,
                     createdAt: student.created_at
                 },
                 stats: {
@@ -217,14 +171,13 @@ export const getStudentDetails = async (req, res) => {
                     inProgress,
                     pending,
                     completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-                    completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-                    weeklyStreak: student.streak !== null ? student.streak : streak
+                    weeklyStreak: streak
                 },
                 bySubject,
                 recentAssignments: assignments.map(sa => ({
                     ...sa.assignment,
-                    id: sa.assignment.id, // Assignment ID
-                    studentAssignmentId: sa.id, // Submission ID
+                    id: sa.assignment.id,
+                    studentAssignmentId: sa.id,
                     status: sa.status,
                     completedAt: sa.completed_at
                 }))
@@ -232,10 +185,7 @@ export const getStudentDetails = async (req, res) => {
         })
     } catch (error) {
         console.error('Get student details error:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch student details'
-        })
+        res.status(500).json({ success: false, message: 'Failed to fetch student details' })
     }
 }
 
@@ -244,36 +194,24 @@ export const getStudentDetails = async (req, res) => {
  */
 export const getDashboardStats = async (req, res) => {
     try {
-        // Get total students
-        const { count: totalStudents, error: studentsError } = await supabase
+        const { count: totalStudents } = await supabase
             .from('users')
             .select('*', { count: 'exact', head: true })
             .eq('role', 'student')
 
-        if (studentsError) throw studentsError
-
-        // Get total assignments
-        const { count: totalAssignments, error: assignmentsError } = await supabase
+        const { count: totalAssignments } = await supabase
             .from('assignments')
             .select('*', { count: 'exact', head: true })
 
-        if (assignmentsError) throw assignmentsError
-
-        // Get completed assignments
-        const { count: completedAssignments, error: completedError } = await supabase
+        const { count: completedAssignments } = await supabase
             .from('student_assignments')
             .select('*', { count: 'exact', head: true })
             .eq('status', 'completed')
 
-        if (completedError) throw completedError
-
-        // Get pending assignments
-        const { count: pendingAssignments, error: pendingError } = await supabase
+        const { count: pendingAssignments } = await supabase
             .from('student_assignments')
             .select('*', { count: 'exact', head: true })
             .eq('status', 'pending')
-
-        if (pendingError) throw pendingError
 
         res.json({
             success: true,
@@ -286,71 +224,45 @@ export const getDashboardStats = async (req, res) => {
         })
     } catch (error) {
         console.error('Get dashboard stats error:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch dashboard stats'
-        })
+        res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats' })
     }
 }
 
 /**
- * Update student points (Admin)
+ * Update student points (Admin only)
  */
 export const updateStudentPoints = async (req, res) => {
-    try {
-        const { id } = req.params
-        const { points } = req.body
+    const { id } = req.params;
+    const { points } = req.body;
 
+    if (points === undefined || points === null || isNaN(points)) {
+        return res.status(400).json({ success: false, message: 'Points value required and must be a number.' });
+    }
+
+    try {
         const { data, error } = await supabase
             .from('users')
             .update({ points })
             .eq('id', id)
-            .select()
-            .single()
+            .eq('role', 'student')
+            .select();
 
-        if (error) throw error
+        if (error) throw error;
+        if (!data || data.length === 0) {
+            return res.status(404).json({ success: false, message: 'Student not found.' });
+        }
 
-        res.json({
-            success: true,
-            message: 'Points updated successfully',
-            data
-        })
+        res.json({ success: true, message: 'Points updated successfully.', data: data[0] });
     } catch (error) {
-        console.error('Update points error:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update points'
-        })
+        console.error('Update student points error:', error);
+        res.status(500).json({ success: false, message: 'Failed to update student points.' });
     }
-}
+};
 
 /**
- * Update student streak (Admin)
+ * Update student streak (Admin only)
  */
 export const updateStudentStreak = async (req, res) => {
-    try {
-        const { id } = req.params
-        const { streak } = req.body
-
-        const { data, error } = await supabase
-            .from('users')
-            .update({ streak })
-            .eq('id', id)
-            .select()
-            .single()
-
-        if (error) throw error
-
-        res.json({
-            success: true,
-            message: 'Streak updated successfully',
-            data
-        })
-    } catch (error) {
-        console.error('Update streak error:', error)
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update streak'
-        })
-    }
-}
+    // Placeholder for streak manual update if needed
+    res.status(501).json({ success: false, message: 'Not implemented' });
+};
