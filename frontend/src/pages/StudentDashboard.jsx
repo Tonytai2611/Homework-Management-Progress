@@ -9,6 +9,7 @@ import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
 import ProgressBar from '../components/shared/ProgressBar'
 
 import { TextGenerateEffect } from '../components/ui/text-generate-effect'
+import AssignmentCard from '../components/shared/AssignmentCard'
 
 const StudentDashboard = () => {
     const { user, signout } = useAuth()
@@ -24,6 +25,17 @@ const StudentDashboard = () => {
     })
     const [assignments, setAssignments] = useState([])
     const [loading, setLoading] = useState(true)
+
+    const handleUpdateStatus = async (assignment) => {
+        try {
+            const newStatus = assignment.status === 'pending' ? 'in-progress' : 'completed'
+            await studentsAPI.updateStatus(assignment.id, newStatus)
+            // Refresh data
+            window.location.reload()
+        } catch (err) {
+            console.error('Failed to update status:', err)
+        }
+    }
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -317,15 +329,19 @@ const StudentDashboard = () => {
                     {/* Recent Assignments */}
                     <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
                         <h4 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">Recent Assignments:</h4>
-                        <div className="space-y-2">
-                            {assignments.slice(0, 3).map((assignment, index) => (
-                                <div key={assignment.id} className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
-                                    <span className="text-blue-600">📘</span>
-                                    <span className="flex-1 truncate">{assignment.title}</span>
+                        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                            {assignments.length === 0 ? (
+                                <div className="text-center py-6 sm:py-10 bg-gray-50/50">
+                                    <p className="text-gray-500 font-medium italic text-xs sm:text-sm">No recent assignments yet! ✨</p>
                                 </div>
-                            ))}
-                            {assignments.length === 0 && (
-                                <p className="text-xs sm:text-sm text-gray-500 italic">No assignments yet</p>
+                            ) : (
+                                assignments.slice(0, 3).map((assignment) => (
+                                    <AssignmentCard
+                                        key={assignment.id}
+                                        assignment={assignment}
+                                        onStart={handleUpdateStatus}
+                                    />
+                                ))
                             )}
                         </div>
                     </div>

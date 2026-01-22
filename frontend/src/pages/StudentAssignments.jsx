@@ -186,7 +186,7 @@ const StudentAssignments = () => {
 
                 {/* Assignments List */}
                 {!loading && (
-                    <div className="space-y-3 sm:space-y-4">
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden divide-y divide-gray-50">
                         {filteredAssignments.length === 0 ? (
                             <div className="bg-white rounded-xl shadow-lg text-center py-8 sm:py-12">
                                 <span className="text-4xl sm:text-6xl mb-4 block">📭</span>
