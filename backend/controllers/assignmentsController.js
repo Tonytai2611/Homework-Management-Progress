@@ -391,6 +391,15 @@ export const adminUpdateSubmissionStatus = async (req, res) => {
             updates.completed_at = new Date().toISOString()
         }
 
+        // Get current status to check for transition
+        const { data: existingSA } = await supabase
+            .from('student_assignments')
+            .select('status, student_id')
+            .eq('id', id)
+            .single()
+
+        const existingStatus = existingSA?.status
+
         const { data, error } = await supabase
             .from('student_assignments')
             .update(updates)
@@ -401,7 +410,7 @@ export const adminUpdateSubmissionStatus = async (req, res) => {
         if (error) throw error
 
         // --- NEW: Add 50 points if Completed ---
-        if (status === 'completed') {
+        if (status === 'completed' && data.status === 'completed' && existingStatus !== 'completed') {
             const studentId = data.student_id
 
             const { data: user } = await supabase

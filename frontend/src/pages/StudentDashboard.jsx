@@ -41,7 +41,8 @@ const StudentDashboard = () => {
                     pending: stats.pending || 0,
                     inProgress: stats.inProgress || 0,
                     completionRate: stats.completionRate || 0,
-                    weeklyStreak: stats.weeklyStreak || 0
+                    weeklyStreak: stats.weeklyStreak || 0,
+                    points: data.student?.points || 0
                 })
 
                 // Get assignments from the same response (recentAssignments)
@@ -208,7 +209,7 @@ const StudentDashboard = () => {
                                 <p className="text-xs sm:text-sm text-gray-600">{user?.level || 'FLYERS'} Level</p>
                                 <div className="flex items-center flex-wrap gap-2 sm:gap-3 mt-1">
                                     <span className="text-xs text-blue-600 flex items-center">
-                                        ⭐ {stats.total * 100} pts
+                                        ⭐ {stats.points || 0} pts
                                     </span>
                                 </div>
                             </div>
