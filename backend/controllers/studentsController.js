@@ -174,13 +174,16 @@ export const getStudentDetails = async (req, res) => {
                     weeklyStreak: streak
                 },
                 bySubject,
-                recentAssignments: assignments.map(sa => ({
-                    ...sa.assignment,
-                    id: sa.assignment.id,
-                    studentAssignmentId: sa.id,
-                    status: sa.status,
-                    completedAt: sa.completed_at
-                }))
+                recentAssignments: assignments
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .slice(0, 10)
+                    .map(sa => ({
+                        ...sa.assignment,
+                        id: sa.assignment.id,
+                        studentAssignmentId: sa.id,
+                        status: sa.status,
+                        completedAt: sa.completed_at
+                    }))
             }
         })
     } catch (error) {

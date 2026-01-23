@@ -29,11 +29,33 @@ const StudentDashboard = () => {
     const handleUpdateStatus = async (assignment) => {
         try {
             const newStatus = assignment.status === 'pending' ? 'in-progress' : 'completed'
+
+            // Optimistic update
+            setAssignments(prev => prev.map(a =>
+                a.id === assignment.id ? { ...a, status: newStatus } : a
+            ))
+
             await studentsAPI.updateStatus(assignment.id, newStatus)
-            // Refresh data
-            window.location.reload()
+
+            // Refetch to ensure sync/stats update (background update)
+            const response = await studentsAPI.getMe()
+            if (response.data) {
+                const data = response.data
+                setStats({
+                    total: data.stats?.total || 0,
+                    completed: data.stats?.completed || 0,
+                    pending: data.stats?.pending || 0,
+                    inProgress: data.stats?.inProgress || 0,
+                    completionRate: data.stats?.completionRate || 0,
+                    weeklyStreak: data.stats?.weeklyStreak || 0,
+                    points: data.student?.points || 0
+                })
+                setAssignments(data.recentAssignments || [])
+            }
         } catch (err) {
             console.error('Failed to update status:', err)
+            // Revert on error
+            window.location.reload()
         }
     }
 
@@ -335,7 +357,7 @@ const StudentDashboard = () => {
                                     <p className="text-gray-500 font-medium italic text-xs sm:text-sm">No recent assignments yet! ✨</p>
                                 </div>
                             ) : (
-                                assignments.map((assignment) => (
+                                assignments.slice(0, 6).map((assignment) => (
                                     <AssignmentCard
                                         key={assignment.id}
                                         assignment={assignment}
