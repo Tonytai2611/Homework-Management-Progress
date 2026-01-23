@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import BlurText from '../components/BlurText'
 import ScrollFloat from '../components/ScrollFloat'
 
@@ -287,6 +288,121 @@ const LandingPage = () => {
                                 <li className="flex items-center gap-2">✓ Performance completion stats</li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* How It Works Section */}
+            <section id="how-it-works" className="py-24 bg-gray-50 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-purple-50 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-teal-50 to-transparent"></div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-purple-600 font-bold tracking-wide uppercase text-sm mb-3 block">Simple Process</span>
+                        <h2 className="text-4xl font-extrabold text-gray-900 mb-4">How Little Buddies Works</h2>
+                        <p className="text-xl text-gray-500 max-w-2xl mx-auto">Three simple steps to transform your homework routine from stressful to successful.</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 relative">
+                        {/* Connecting Line (Desktop) */}
+                        <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-purple-200 via-teal-200 to-purple-200 border-t-2 border-dashed border-gray-300 z-0"></div>
+
+                        {[
+                            {
+                                title: "1. Sign Up & Connect",
+                                desc: "Create your free parent account and invite your child. Set up their profile in under 60 seconds.",
+                                icon: "🚀",
+                                color: "bg-purple-100 text-purple-600"
+                            },
+                            {
+                                title: "2. Assign Tasks",
+                                desc: "Teachers or parents add assignments, set due dates, and attach resources effortlessly.",
+                                icon: "📝",
+                                color: "bg-teal-100 text-teal-600"
+                            },
+                            {
+                                title: "3. Learn & Earn",
+                                desc: "Students complete tasks, gain XP points, and build a learning streak to unlock rewards!",
+                                icon: "🏆",
+                                color: "bg-orange-100 text-orange-600"
+                            }
+                        ].map((step, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: idx * 0.2 }}
+                                viewport={{ once: true }}
+                                className="relative z-10 bg-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 text-center"
+                            >
+                                <div className={`w-20 h-20 mx-auto ${step.color} rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-inner`}>
+                                    {step.icon}
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                                <p className="text-gray-600 leading-relaxed">{step.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonials Section */}
+            <section id="testimonials" className="py-24 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <span className="text-teal-600 font-bold tracking-wide uppercase text-sm mb-3 block">Community Love</span>
+                        <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Loved by Parents & Teachers</h2>
+                        <p className="text-xl text-gray-500">Don't just take our word for it. See what our community has to say.</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                name: "Sarah Jenkins",
+                                role: "Parent of two",
+                                quote: "Finally, no more arguments about homework! My son actually checks the app himself to see his points go up. It's truly a game-changer for our evenings.",
+                                seed: "Sarah"
+                            },
+                            {
+                                name: "Mr. David Ross",
+                                role: "4th Grade Teacher",
+                                quote: "I can easily track which students are struggling and who is excelling. The layout is clean, simple, and the kids love the dashboard.",
+                                seed: "David"
+                            },
+                            {
+                                name: "Emily Chen",
+                                role: "Student (Age 10)",
+                                quote: "I love earning badges! It feels like a game, and I don't forget my math homework anymore because the list is right there.",
+                                seed: "Emily"
+                            }
+                        ].map((review, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                viewport={{ once: true }}
+                                className="bg-gray-50 rounded-3xl p-8 border border-gray-100 relative hover:bg-purple-50/30 transition-colors"
+                            >
+                                <div className="absolute top-6 right-8 text-6xl text-purple-200 font-serif opacity-50">"</div>
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-md">
+                                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.seed}`} alt={review.name} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">{review.name}</h4>
+                                        <p className="text-sm text-purple-600 font-medium">{review.role}</p>
+                                    </div>
+                                </div>
+                                <p className="text-gray-700 italic relative z-10 leading-relaxed">
+                                    "{review.quote}"
+                                </p>
+                                <div className="flex text-yellow-400 mt-4 text-sm">
+                                    {'★'.repeat(5)}
+                                </div>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
