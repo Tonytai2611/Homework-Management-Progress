@@ -88,7 +88,7 @@ const AssignmentCard = ({
     }
 
     const formatStatus = (status) => {
-        return status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)
+        return status.charAt(0).toUpperCase() + status.slice(1)
     }
 
     if (compact) {

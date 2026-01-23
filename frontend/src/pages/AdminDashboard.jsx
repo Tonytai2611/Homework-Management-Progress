@@ -375,8 +375,7 @@ const AdminDashboard = () => {
                                                 <div key={assignment.id} className="flex items-center space-x-2 text-sm">
                                                     <SubjectIcon subject={assignment.subject} className="text-lg" />
                                                     <span className="flex-1 text-gray-700 truncate">{assignment.title}</span>
-                                                    <span className={`w-2 h-2 rounded-full ${assignment.status === 'completed' ? 'bg-green-500' :
-                                                        assignment.status === 'in-progress' ? 'bg-blue-500' : 'bg-gray-300'
+                                                    <span className={`w-2 h-2 rounded-full ${assignment.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
                                                         }`}></span>
                                                 </div>
                                             ))}

@@ -93,7 +93,6 @@ const StudentCalendar = () => {
     const getStatusDot = (status) => {
         const colors = {
             'completed': 'bg-green-500',
-            'in-progress': 'bg-blue-500',
             'pending': 'bg-gray-400'
         }
         return colors[status] || 'bg-gray-400'
@@ -232,10 +231,6 @@ const StudentCalendar = () => {
                                     <div className="flex items-center space-x-1 sm:space-x-2">
                                         <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-400"></span>
                                         <span className="text-xs sm:text-sm text-gray-700">Pending</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1 sm:space-x-2">
-                                        <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500"></span>
-                                        <span className="text-xs sm:text-sm text-gray-700">In Progress</span>
                                     </div>
                                     <div className="flex items-center space-x-1 sm:space-x-2">
                                         <span className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500"></span>

@@ -72,7 +72,7 @@ const StudentProgress = () => {
                 {/* Overall Progress */}
                 <div className="card bg-gradient-purple-teal text-white p-4 sm:p-6">
                     <h2 className="text-xl sm:text-2xl font-bold mb-4">Overall Progress</h2>
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                         <div className="bg-white/10 rounded-lg p-3 sm:p-4">
                             <p className="text-purple-100 text-xs sm:text-sm">Total Assignments</p>
                             <p className="text-2xl sm:text-3xl font-bold">{overall?.total || 0}</p>
@@ -80,10 +80,6 @@ const StudentProgress = () => {
                         <div className="bg-white/10 rounded-lg p-3 sm:p-4">
                             <p className="text-purple-100 text-xs sm:text-sm">Completed</p>
                             <p className="text-2xl sm:text-3xl font-bold">{overall?.completed || 0}</p>
-                        </div>
-                        <div className="bg-white/10 rounded-lg p-3 sm:p-4">
-                            <p className="text-purple-100 text-xs sm:text-sm">In Progress</p>
-                            <p className="text-2xl sm:text-3xl font-bold">{overall?.in_progress || 0}</p>
                         </div>
                         <div className="bg-white/10 rounded-lg p-3 sm:p-4">
                             <p className="text-purple-100 text-xs sm:text-sm">Completion Rate</p>

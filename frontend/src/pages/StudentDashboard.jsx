@@ -30,7 +30,7 @@ const StudentDashboard = () => {
     const [loading, setLoading] = useState(true)
     const handleUpdateStatus = async (assignment) => {
         try {
-            const newStatus = assignment.status === 'pending' ? 'in-progress' : 'completed'
+            const newStatus = assignment.status === 'pending' ? 'completed' : 'completed'
 
             // Optimistic update
             setAssignments(prev => prev.map(a =>
