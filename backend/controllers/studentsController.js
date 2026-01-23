@@ -173,13 +173,31 @@ export const getStudentDetails = async (req, res) => {
                     weeklyStreak: streak
                 },
                 bySubject,
-                recentAssignments: assignments.map(sa => ({
-                    ...sa.assignment,
-                    id: sa.assignment.id,
-                    studentAssignmentId: sa.id,
-                    status: sa.status,
-                    completedAt: sa.completed_at
-                }))
+                recentAssignments: assignments
+                    .sort((a, b) => {
+                        // 1. Status Priority: Pending/In-Progress (0) < Completed (1)
+                        const isCompletedA = a.status === 'completed' ? 1 : 0;
+                        const isCompletedB = b.status === 'completed' ? 1 : 0;
+                        if (isCompletedA !== isCompletedB) return isCompletedA - isCompletedB;
+
+                        // 2. For incomplete items: Sort by Due Date ASC (Overdue/Sooner first)
+                        if (isCompletedA === 0) {
+                            const dateA = new Date(a.assignment.due_date);
+                            const dateB = new Date(b.assignment.due_date);
+                            return dateA - dateB;
+                        }
+
+                        // 3. For completed items: Sort by Updated/Created DESC (Recently finished first)
+                        return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+                    })
+                    .slice(0, 10)
+                    .map(sa => ({
+                        ...sa.assignment,
+                        id: sa.assignment.id,
+                        studentAssignmentId: sa.id,
+                        status: sa.status,
+                        completedAt: sa.completed_at
+                    }))
             }
         })
     } catch (error) {
