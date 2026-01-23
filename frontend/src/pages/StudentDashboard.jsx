@@ -60,6 +60,43 @@ const StudentDashboard = () => {
         }
     }
 
+    const handleMarkCompleteFromModal = async (assignmentId, completedTasks) => {
+        const assignment = assignments.find(a => a.id === assignmentId)
+        if (assignment) {
+            try {
+                // Optimistic update
+                setAssignments(prev => prev.map(a =>
+                    a.id === assignmentId ? { ...a, status: 'completed', completed_tasks: completedTasks } : a
+                ))
+
+                await studentsAPI.updateStatus(assignmentId, 'completed', completedTasks)
+
+                // Refetch to ensure everything is in sync
+                const response = await studentsAPI.getMe()
+                if (response.data) {
+                    const data = response.data
+                    setStats({
+                        total: data.stats?.total || 0,
+                        completed: data.stats?.completed || 0,
+                        pending: data.stats?.pending || 0,
+                        inProgress: data.stats?.inProgress || 0,
+                        completionRate: data.stats?.completionRate || 0,
+                        weeklyStreak: data.stats?.weeklyStreak || 0,
+                        points: data.student?.points || 0
+                    })
+                    setAssignments(data.recentAssignments || [])
+                }
+
+                // Close the modal
+                setSelectedAssignment(null)
+            } catch (err) {
+                console.error('Failed to update status from modal:', err)
+                // Revert optimistic update if needed, or just reload
+                window.location.reload()
+            }
+        }
+    }
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -396,7 +433,7 @@ const StudentDashboard = () => {
                 <AssignmentDetailModal
                     assignment={selectedAssignment}
                     onClose={() => setSelectedAssignment(null)}
-                    onMarkComplete={handleUpdateStatus}
+                    onMarkComplete={handleMarkCompleteFromModal}
                 />
             )}
         </div>

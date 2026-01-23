@@ -38,8 +38,8 @@ export const assignmentsAPI = {
     /**
      * Update assignment status (Student)
      */
-    updateStatus: async (id, status, notes = '') => {
-        const response = await api.patch(`/assignments/${id}/status`, { status, notes })
+    updateStatus: async (id, status, completedTasks, notes = '') => {
+        const response = await api.patch(`/assignments/${id}/status`, { status, completedTasks, notes })
         return response.data
     },
 
@@ -134,5 +134,12 @@ export const studentsAPI = {
     updateStreak: async (id, streak) => {
         const response = await api.put(`/students/${id}/streak`, { streak })
         return response.data
+    },
+
+    /**
+     * Update assignment status (Student) - Alias for assignmentsAPI.updateStatus
+     */
+    updateStatus: async (id, status, completedTasks, notes) => {
+        return assignmentsAPI.updateStatus(id, status, completedTasks, notes)
     }
 }

@@ -309,7 +309,7 @@ export const deleteAssignment = async (req, res) => {
 export const updateAssignmentStatus = async (req, res) => {
     try {
         const { id } = req.params
-        const { status, notes } = req.body
+        const { status, notes, completedTasks } = req.body
         const studentId = req.user.id
 
         // Check if student_assignment exists
@@ -323,15 +323,20 @@ export const updateAssignmentStatus = async (req, res) => {
         let result
         if (!existing) {
             // Create new
+            const insertData = {
+                assignment_id: id,
+                student_id: studentId,
+                status,
+                notes: notes || null,
+                started_at: status === 'in-progress' ? new Date().toISOString() : null
+            }
+
+            if (completedTasks !== undefined) insertData.completed_tasks = completedTasks
+            if (status === 'completed') insertData.completed_at = new Date().toISOString()
+
             const { data, error } = await supabase
                 .from('student_assignments')
-                .insert([{
-                    assignment_id: id,
-                    student_id: studentId,
-                    status,
-                    notes: notes || null,
-                    started_at: status === 'in-progress' ? new Date().toISOString() : null
-                }])
+                .insert([insertData])
                 .select()
                 .single()
 
@@ -341,6 +346,8 @@ export const updateAssignmentStatus = async (req, res) => {
             // Update existing
             const updates = { status }
             if (notes !== undefined) updates.notes = notes
+            if (completedTasks !== undefined) updates.completed_tasks = completedTasks
+
             if (status === 'in-progress' && !existing.started_at) {
                 updates.started_at = new Date().toISOString()
             }
