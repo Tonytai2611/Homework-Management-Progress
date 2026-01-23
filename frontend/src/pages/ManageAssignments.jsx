@@ -276,6 +276,7 @@ const ManageAssignments = () => {
                                     required
                                 >
                                     <option value="">Select student...</option>
+                                    <option value="all" className="font-bold text-purple-600">Select All Students</option>
                                     {students.map(student => (
                                         <option key={student.id} value={student.id}>
                                             {student.full_name} ({student.level})

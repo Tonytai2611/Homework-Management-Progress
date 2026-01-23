@@ -191,8 +191,25 @@ export const createAssignment = async (req, res) => {
         if (assignmentError) throw assignmentError
 
         // Assign to students if provided
+        // Assign to students if provided
         if (studentIds && studentIds.length > 0) {
-            const studentAssignments = studentIds.map(studentId => ({
+            let targetStudentIds = [...studentIds];
+
+            // Handle "All Students" selection
+            if (targetStudentIds.includes('all')) {
+                const { data: allStudents, error: usersError } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('role', 'student');
+
+                if (usersError) throw usersError;
+                targetStudentIds = allStudents.map(u => u.id);
+            }
+
+            // Remove duplicates just in case
+            targetStudentIds = [...new Set(targetStudentIds)];
+
+            const studentAssignments = targetStudentIds.map(studentId => ({
                 assignment_id: newAssignment.id,
                 student_id: studentId,
                 status: 'pending'
