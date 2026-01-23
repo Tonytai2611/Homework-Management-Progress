@@ -11,11 +11,14 @@ import ProgressBar from '../components/shared/ProgressBar'
 import { TextGenerateEffect } from '../components/ui/text-generate-effect'
 import AssignmentCard from '../components/shared/AssignmentCard'
 
+import AssignmentDetailModal from '../components/AssignmentDetailModal'
+
 const StudentDashboard = () => {
     const { user, signout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [selectedAssignment, setSelectedAssignment] = useState(null)
     const [stats, setStats] = useState({
         total: 0,
         completed: 0,
@@ -356,6 +359,7 @@ const StudentDashboard = () => {
                                         key={assignment.id}
                                         assignment={assignment}
                                         onStart={handleUpdateStatus}
+                                        onView={(assignment) => setSelectedAssignment(assignment)}
                                         compact={true}
                                     />
                                 ))
@@ -386,6 +390,15 @@ const StudentDashboard = () => {
 
             {/* Bottom padding for mobile nav */}
             <div className="md:hidden h-20"></div>
+
+            {/* Assignment Detail Modal */}
+            {selectedAssignment && (
+                <AssignmentDetailModal
+                    assignment={selectedAssignment}
+                    onClose={() => setSelectedAssignment(null)}
+                    onMarkComplete={handleUpdateStatus}
+                />
+            )}
         </div>
     )
 }

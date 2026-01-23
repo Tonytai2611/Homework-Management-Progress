@@ -99,7 +99,7 @@ const AssignmentDetailModal = ({ assignment, onClose, onMarkComplete }) => {
                                             ? 'line-through text-gray-400'
                                             : 'text-gray-700'
                                             }`}>
-                                            {task.text}
+                                            {typeof task === 'string' ? task : task.text}
                                         </span>
                                     </label>
                                 ))}
@@ -110,21 +110,31 @@ const AssignmentDetailModal = ({ assignment, onClose, onMarkComplete }) => {
 
                 {/* Footer */}
                 <div className="sticky bottom-0 bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
-                    <div className="mb-3 sm:mb-4">
-                        <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">Mark as Complete</h3>
-                        <p className="text-xs sm:text-sm text-gray-600">
-                            {allTasksCompleted
-                                ? 'Great job! All tasks completed. Click below to mark this assignment as complete.'
-                                : 'Have you finished this assignment? Click below to mark it as complete.'}
-                        </p>
-                    </div>
-                    <button
-                        onClick={handleMarkComplete}
-                        className="w-full bg-teal-500 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-teal-600 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base"
-                    >
-                        <span>✓</span>
-                        <span>Mark as Complete</span>
-                    </button>
+                    {assignment.status === 'completed' ? (
+                        <div className="text-center py-2">
+                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 font-bold text-sm">
+                                <span className="text-lg">🎉</span> Assignment Completed
+                            </span>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="mb-3 sm:mb-4">
+                                <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">Mark as Complete</h3>
+                                <p className="text-xs sm:text-sm text-gray-600">
+                                    {allTasksCompleted
+                                        ? 'Great job! All tasks completed. Click below to mark this assignment as complete.'
+                                        : 'Have you finished this assignment? Click below to mark it as complete.'}
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleMarkComplete}
+                                className="w-full bg-teal-500 text-white py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-teal-600 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base"
+                            >
+                                <span>✓</span>
+                                <span>Mark as Complete</span>
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
