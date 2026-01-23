@@ -21,7 +21,7 @@ const StudentCalendar = () => {
             const response = await assignmentsAPI.getAll()
             setAssignments(response.data || [])
         } catch (err) {
-            console.error('Failed to fetch assignments:', err)
+
             setError('Failed to load assignments')
         } finally {
             setLoading(false)

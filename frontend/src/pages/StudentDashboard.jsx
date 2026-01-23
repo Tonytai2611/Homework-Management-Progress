@@ -28,11 +28,11 @@ const StudentDashboard = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                console.log('Fetching dashboard data...')
+
                 // Use getMe() which returns user data, stats, and recentAssignments
                 const response = await studentsAPI.getMe()
                 const data = response.data || {}
-                console.log('Dashboard data from getMe:', data)
+
 
                 const stats = data.stats || {}
                 setStats({
@@ -48,8 +48,7 @@ const StudentDashboard = () => {
                 // Get assignments from the same response (recentAssignments)
                 setAssignments(data.recentAssignments || [])
             } catch (error) {
-                console.error('Failed to fetch dashboard data:', error)
-                console.error('Error details:', error.response?.data)
+
             } finally {
                 setLoading(false)
             }
@@ -245,11 +244,10 @@ const StudentDashboard = () => {
                             // Group assignments by subject and calculate progress
                             const subjectProgress = {}
 
-                            console.log('All assignments for skills:', assignments)
+
 
                             assignments.forEach(assignment => {
                                 const subject = assignment.subject || 'Other'
-                                console.log('Processing assignment:', assignment.title, 'Subject:', subject, 'Status:', assignment.status)
                                 if (!subjectProgress[subject]) {
                                     subjectProgress[subject] = { total: 0, completed: 0 }
                                 }
@@ -258,8 +256,6 @@ const StudentDashboard = () => {
                                     subjectProgress[subject].completed++
                                 }
                             })
-
-                            console.log('Subject progress:', subjectProgress)
 
                             // Define skills with colors
                             const skillsConfig = [
@@ -282,7 +278,7 @@ const StudentDashboard = () => {
                                 }
                             })
 
-                            console.log('Skills to display:', skills)
+
 
                             return skills.map((skill) => {
                                 const percentage = skill.hasData ? Math.round((skill.value / skill.max) * 100) : 0

@@ -22,10 +22,7 @@ const AssignmentDetailModal = ({ assignment, onClose, onMarkComplete }) => {
     const tasks = assignment.tasks || []
     const allTasksCompleted = tasks.length > 0 && completedTasks.length === tasks.length
 
-    // Debug logging
-    console.log('Assignment data:', assignment)
-    console.log('Tasks:', tasks)
-    console.log('Tasks length:', tasks.length)
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">

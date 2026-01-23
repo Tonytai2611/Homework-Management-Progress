@@ -29,7 +29,7 @@ export const getAllAssignments = async (req, res) => {
             data
         })
     } catch (error) {
-        console.error('Get all assignments error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch assignments'
@@ -115,7 +115,7 @@ export const getStudentAssignments = async (req, res) => {
             data: combinedAssignments
         })
     } catch (error) {
-        console.error('Get student assignments error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch assignments'
@@ -148,7 +148,7 @@ export const getAssignment = async (req, res) => {
             data: assignment
         })
     } catch (error) {
-        console.error('Get assignment error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch assignment'
@@ -211,7 +211,7 @@ export const createAssignment = async (req, res) => {
             data: newAssignment
         })
     } catch (error) {
-        console.error('Create assignment error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to create assignment'
@@ -251,7 +251,7 @@ export const updateAssignment = async (req, res) => {
             data
         })
     } catch (error) {
-        console.error('Update assignment error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to update assignment'
@@ -278,7 +278,7 @@ export const deleteAssignment = async (req, res) => {
             message: 'Assignment deleted successfully'
         })
     } catch (error) {
-        console.error('Delete assignment error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to delete assignment'
@@ -365,7 +365,7 @@ export const updateAssignmentStatus = async (req, res) => {
             data: result
         })
     } catch (error) {
-        console.error('Update assignment status error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to update assignment status'
@@ -434,7 +434,7 @@ export const adminUpdateSubmissionStatus = async (req, res) => {
             data
         })
     } catch (error) {
-        console.error('Admin update submission error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to update submission status'
@@ -527,7 +527,7 @@ export const getStudentProgress = async (req, res) => {
             }
         })
     } catch (error) {
-        console.error('Get student progress error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch progress data'
@@ -571,7 +571,7 @@ export const assignToStudents = async (req, res) => {
             data
         })
     } catch (error) {
-        console.error('Assign to students error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to assign assignment'

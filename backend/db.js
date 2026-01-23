@@ -28,10 +28,9 @@ export async function testConnection() {
 
         if (error) throw error
 
-        console.log('✅ Database connected successfully at:', new Date().toISOString())
         return true
     } catch (error) {
-        console.error('❌ Database connection failed:', error.message)
+
         return false
     }
 }

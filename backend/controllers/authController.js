@@ -79,7 +79,7 @@ export const signup = async (req, res) => {
             .single()
 
         if (error) {
-            console.error('Supabase insert error:', error)
+
             throw error
         }
 
@@ -93,7 +93,7 @@ export const signup = async (req, res) => {
             user: formatUser(newUser)
         })
     } catch (error) {
-        console.error('Signup error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Registration failed'
@@ -149,7 +149,7 @@ export const signin = async (req, res) => {
             user: formatUser(user)
         })
     } catch (error) {
-        console.error('Signin error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Login failed'
@@ -182,7 +182,7 @@ export const getCurrentUser = async (req, res) => {
             user: formatUser(user)
         })
     } catch (error) {
-        console.error('Get current user error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch user'

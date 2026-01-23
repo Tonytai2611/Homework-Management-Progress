@@ -18,7 +18,7 @@ export const getAllStudents = async (req, res) => {
             data
         })
     } catch (error) {
-        console.error('Get all students error:', error)
+
         res.status(500).json({
             success: false,
             message: 'Failed to fetch students'
@@ -30,10 +30,10 @@ export const getAllStudents = async (req, res) => {
  * Get current student details
  */
 export const getMyDetails = async (req, res) => {
-    console.log('getMyDetails called, req.user:', req.user)
+
 
     if (!req.user || !req.user.id) {
-        console.error('getMyDetails: No user ID in token')
+
         return res.status(401).json({
             success: false,
             message: 'User ID not found in token'
@@ -50,7 +50,6 @@ export const getMyDetails = async (req, res) => {
 export const getStudentDetails = async (req, res) => {
     try {
         const { id } = req.params
-        console.log('getStudentDetails called for ID:', id)
 
         // Get student info
         const { data: student, error: studentError } = await supabase
@@ -184,7 +183,7 @@ export const getStudentDetails = async (req, res) => {
             }
         })
     } catch (error) {
-        console.error('Get student details error:', error)
+
         res.status(500).json({ success: false, message: 'Failed to fetch student details' })
     }
 }
@@ -223,7 +222,7 @@ export const getDashboardStats = async (req, res) => {
             }
         })
     } catch (error) {
-        console.error('Get dashboard stats error:', error)
+
         res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats' })
     }
 }
@@ -254,7 +253,7 @@ export const updateStudentPoints = async (req, res) => {
 
         res.json({ success: true, message: 'Points updated successfully.', data: data[0] });
     } catch (error) {
-        console.error('Update student points error:', error);
+
         res.status(500).json({ success: false, message: 'Failed to update student points.' });
     }
 };

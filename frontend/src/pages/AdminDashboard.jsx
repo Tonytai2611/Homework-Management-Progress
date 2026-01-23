@@ -36,14 +36,13 @@ const AdminDashboard = () => {
                         const detailsResponse = await studentsAPI.getById(student.id)
                         return detailsResponse.data
                     } catch (err) {
-                        console.error(`Failed to fetch details for student ${student.id}:`, err)
                         return student
                     }
                 })
             )
             setStudents(studentsWithDetails)
         } catch (err) {
-            console.error('Failed to fetch students:', err)
+
         } finally {
             setLoading(false)
         }
@@ -102,7 +101,6 @@ const AdminDashboard = () => {
                 ))
             }
         } catch (err) {
-            console.error('Failed to update status:', err)
             showToast('Failed to update status', 'error')
         }
     }
@@ -137,7 +135,6 @@ const AdminDashboard = () => {
 
             setEditingPoints({ studentId: null, points: 0 })
         } catch (err) {
-            console.error('Failed to update points:', err)
             showToast('Failed to update points', 'error')
         }
     }

@@ -31,14 +31,14 @@ const StudentsListPage = () => {
                         const detailsResponse = await studentsAPI.getById(student.id)
                         return detailsResponse.data
                     } catch (err) {
-                        console.error(`Failed to fetch details for student ${student.id}:`, err)
+
                         return student
                     }
                 })
             )
             setStudents(studentsWithDetails)
         } catch (err) {
-            console.error('Failed to fetch students:', err)
+
             setError('Failed to load students')
         } finally {
             setLoading(false)

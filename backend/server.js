@@ -69,7 +69,7 @@ app.use((req, res) => {
 
 // Error Handler
 app.use((err, req, res, next) => {
-    console.error('Error:', err)
+
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'Internal server error'
@@ -79,36 +79,28 @@ app.use((err, req, res, next) => {
 // Start server
 async function startServer() {
     try {
-        console.log('🚀 Starting Little Buddies Learning Hub API...\n')
-
         // Test database connection
         const isConnected = await testConnection()
 
         if (!isConnected) {
-            console.error('❌ Failed to connect to database. Please check your .env file.')
+
             process.exit(1)
         }
 
         // Start listening
         app.listen(PORT, () => {
-            console.log(`\n✅ Server running on port ${PORT}`)
-            console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`)
-            console.log(`🔗 API Base URL: http://localhost:${PORT}/api`)
-            console.log('\n📍 Available endpoints:')
-            console.log('   POST /api/auth/signup - Register new user')
-            console.log('   POST /api/auth/signin - Login user')
-            console.log('   GET  /api/auth/me - Get current user (protected)')
-            console.log('\n💡 Press Ctrl+C to stop the server\n')
+
+
         })
     } catch (error) {
-        console.error('Failed to start server:', error)
+
         process.exit(1)
     }
 }
 
 // Start server if not running on Vercel
 if (process.env.VERCEL) {
-    console.log('🚀 Serverless function initialized')
+    // Serverless mode
 } else {
     // Start local server
     startServer()
@@ -119,6 +111,5 @@ export default app
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-    console.log('\n👋 Shutting down gracefully...')
     process.exit(0)
 })

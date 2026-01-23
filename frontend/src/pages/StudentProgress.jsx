@@ -20,7 +20,7 @@ const StudentProgress = () => {
             const response = await assignmentsAPI.getProgress()
             setProgressData(response.data)
         } catch (err) {
-            console.error('Failed to load progress:', err)
+
             setError('Failed to load progress data')
         } finally {
             setLoading(false)

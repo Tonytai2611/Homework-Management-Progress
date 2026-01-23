@@ -39,8 +39,7 @@ const StudentAssignments = () => {
             const response = await assignmentsAPI.getAll(filters)
             setAssignments(response.data || [])
         } catch (err) {
-            console.error('Failed to load assignments:', err)
-            setError('Failed to load assignments. Please try again.')
+
         } finally {
             setLoading(false)
         }
@@ -60,8 +59,7 @@ const StudentAssignments = () => {
             fetchAssignments() // Refresh list
             setSelectedAssignment(null)
         } catch (err) {
-            console.error('Failed to mark complete:', err)
-            alert('Failed to mark assignment as complete')
+
         }
     }
 

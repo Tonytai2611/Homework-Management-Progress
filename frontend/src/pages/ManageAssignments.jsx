@@ -68,7 +68,7 @@ const ManageAssignments = () => {
             const response = await studentsAPI.getAll()
             setStudents(response.data || [])
         } catch (err) {
-            console.error('Failed to fetch students:', err)
+
         }
     }
 
@@ -78,7 +78,7 @@ const ManageAssignments = () => {
             setAssignments(response.data || [])
             setFilteredAssignments(response.data || [])
         } catch (err) {
-            console.error('Failed to fetch assignments:', err)
+
         }
     }
 
@@ -126,7 +126,6 @@ const ManageAssignments = () => {
             // Refresh assignments list
             fetchAssignments()
         } catch (err) {
-            console.error('Create assignment error:', err)
             showToast(err.response?.data?.message || 'Failed to create assignment', 'error')
         } finally {
             setLoading(false)
@@ -189,7 +188,6 @@ const ManageAssignments = () => {
             fetchAssignments()
             setDeletingAssignment(null)
         } catch (err) {
-            console.error('Delete assignment error:', err)
             showToast('Failed to delete assignment', 'error')
             setDeletingAssignment(null)
         }

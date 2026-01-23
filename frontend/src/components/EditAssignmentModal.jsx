@@ -58,7 +58,6 @@ const EditAssignmentModal = ({ assignment, onClose, onUpdate }) => {
             onUpdate()
             onClose()
         } catch (err) {
-            console.error('Update assignment error:', err)
             setError(err.response?.data?.message || 'Failed to update assignment')
         } finally {
             setLoading(false)
