@@ -43,6 +43,16 @@ app.use('/api/auth', authRoutes)
 app.use('/api/assignments', assignmentsRoutes)
 app.use('/api/students', studentsRoutes)
 
+// Keep-alive endpoint to prevent Render and Supabase from sleeping
+app.get('/api/health/keep-alive', async (req, res) => {
+    const isConnected = await testConnection()
+    res.json({
+        success: true,
+        database: isConnected ? 'connected' : 'failed',
+        timestamp: new Date().toISOString()
+    })
+})
+
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: '.swagger-ui .topbar { display: none }',
