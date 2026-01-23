@@ -335,7 +335,7 @@ const StudentDashboard = () => {
                                     <p className="text-gray-500 font-medium italic text-xs sm:text-sm">No recent assignments yet! ✨</p>
                                 </div>
                             ) : (
-                                assignments.slice(0, 3).map((assignment) => (
+                                assignments.map((assignment) => (
                                     <AssignmentCard
                                         key={assignment.id}
                                         assignment={assignment}
