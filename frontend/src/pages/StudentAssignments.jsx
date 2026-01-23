@@ -106,7 +106,7 @@ const StudentAssignments = () => {
                 )}
 
                 {/* Stats Overview */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
                     <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
                         <p className="text-xs sm:text-sm text-gray-600">Total</p>
                         <p className="text-xl sm:text-2xl font-bold text-purple-600">{stats.total}</p>
@@ -114,10 +114,6 @@ const StudentAssignments = () => {
                     <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
                         <p className="text-xs sm:text-sm text-gray-600">Pending</p>
                         <p className="text-xl sm:text-2xl font-bold text-orange-600">{stats.pending}</p>
-                    </div>
-                    <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
-                        <p className="text-xs sm:text-sm text-gray-600">In Progress</p>
-                        <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.inProgress}</p>
                     </div>
                     <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
                         <p className="text-xs sm:text-sm text-gray-600">Completed</p>
@@ -132,7 +128,7 @@ const StudentAssignments = () => {
                         <div>
                             <span className="text-xs sm:text-sm font-medium text-gray-700 mb-2 block">Status:</span>
                             <div className="flex flex-wrap gap-2">
-                                {['all', 'pending', 'in-progress', 'completed'].map((status) => (
+                                {['all', 'pending', 'completed'].map((status) => (
                                     <button
                                         key={status}
                                         onClick={() => setFilter(status)}
@@ -144,13 +140,10 @@ const StudentAssignments = () => {
                                         {status === 'pending' && (
                                             <MdOutlinePendingActions className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filter === status ? 'text-white' : 'text-orange-600'}`} />
                                         )}
-                                        {status === 'in-progress' && (
-                                            <GrInProgress className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filter === status ? 'text-white' : 'text-blue-600'}`} />
-                                        )}
                                         {status === 'completed' && (
                                             <IoCheckmarkCircle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filter === status ? 'text-white' : 'text-green-600'}`} />
                                         )}
-                                        <span>{status === 'in-progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                                        <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
                                     </button>
                                 ))}
                             </div>
