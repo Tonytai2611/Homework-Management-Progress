@@ -106,7 +106,16 @@ async function startServer() {
     }
 }
 
-startServer()
+// Start server if not running on Vercel
+if (process.env.VERCEL) {
+    console.log('🚀 Serverless function initialized')
+} else {
+    // Start local server
+    startServer()
+}
+
+// Export app for Vercel
+export default app
 
 // Graceful shutdown
 process.on('SIGINT', async () => {

@@ -9,7 +9,6 @@ import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
 import ProgressBar from '../components/shared/ProgressBar'
 
 import { TextGenerateEffect } from '../components/ui/text-generate-effect'
-import AssignmentCard from '../components/shared/AssignmentCard'
 
 const StudentDashboard = () => {
     const { user, signout } = useAuth()
@@ -25,39 +24,6 @@ const StudentDashboard = () => {
     })
     const [assignments, setAssignments] = useState([])
     const [loading, setLoading] = useState(true)
-
-    const handleUpdateStatus = async (assignment) => {
-        try {
-            const newStatus = assignment.status === 'pending' ? 'in-progress' : 'completed'
-
-            // Optimistic update
-            setAssignments(prev => prev.map(a =>
-                a.id === assignment.id ? { ...a, status: newStatus } : a
-            ))
-
-            await studentsAPI.updateStatus(assignment.id, newStatus)
-
-            // Refetch to ensure sync/stats update (background update)
-            const response = await studentsAPI.getMe()
-            if (response.data) {
-                const data = response.data
-                setStats({
-                    total: data.stats?.total || 0,
-                    completed: data.stats?.completed || 0,
-                    pending: data.stats?.pending || 0,
-                    inProgress: data.stats?.inProgress || 0,
-                    completionRate: data.stats?.completionRate || 0,
-                    weeklyStreak: data.stats?.weeklyStreak || 0,
-                    points: data.student?.points || 0
-                })
-                setAssignments(data.recentAssignments || [])
-            }
-        } catch (err) {
-            console.error('Failed to update status:', err)
-            // Revert on error
-            window.location.reload()
-        }
-    }
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -351,19 +317,15 @@ const StudentDashboard = () => {
                     {/* Recent Assignments */}
                     <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
                         <h4 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">Recent Assignments:</h4>
-                        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden divide-y divide-gray-50">
-                            {assignments.length === 0 ? (
-                                <div className="text-center py-6 sm:py-10 bg-gray-50/50">
-                                    <p className="text-gray-500 font-medium italic text-xs sm:text-sm">No recent assignments yet! ✨</p>
+                        <div className="space-y-2">
+                            {assignments.slice(0, 3).map((assignment, index) => (
+                                <div key={assignment.id} className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
+                                    <span className="text-blue-600">📘</span>
+                                    <span className="flex-1 truncate">{assignment.title}</span>
                                 </div>
-                            ) : (
-                                assignments.slice(0, 6).map((assignment) => (
-                                    <AssignmentCard
-                                        key={assignment.id}
-                                        assignment={assignment}
-                                        onStart={handleUpdateStatus}
-                                    />
-                                ))
+                            ))}
+                            {assignments.length === 0 && (
+                                <p className="text-xs sm:text-sm text-gray-500 italic">No assignments yet</p>
                             )}
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'https://homework-management-progress.onrender.com/api',
+    baseURL: 'https://homework-management-progress-itre.vercel.app/api',
     headers: {
         'Content-Type': 'application/json'
     }
