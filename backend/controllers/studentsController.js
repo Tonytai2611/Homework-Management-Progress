@@ -174,21 +174,41 @@ export const getStudentDetails = async (req, res) => {
                 },
                 bySubject,
                 recentAssignments: assignments
+                    .filter(a => {
+
+                        if (a.status === 'pending') return true;
+
+
+                        if (a.status === 'completed') {
+                            const today = new Date();
+                            const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+                            const dueDate = new Date(a.assignment.due_date);
+                            const completedDate = a.completed_at ? new Date(a.completed_at) : null;
+
+                            // Show if due date is recent OR if it was completed recently
+                            return dueDate >= sevenDaysAgo || (completedDate && completedDate >= sevenDaysAgo);
+                        }
+
+                        return false;
+                    })
                     .sort((a, b) => {
-                        // 1. Status Priority: Pending/In-Progress (0) < Completed (1)
+
                         const isCompletedA = a.status === 'completed' ? 1 : 0;
                         const isCompletedB = b.status === 'completed' ? 1 : 0;
                         if (isCompletedA !== isCompletedB) return isCompletedA - isCompletedB;
 
-                        // 2. For incomplete items: Sort by Due Date ASC (Overdue/Sooner first)
                         if (isCompletedA === 0) {
                             const dateA = new Date(a.assignment.due_date);
                             const dateB = new Date(b.assignment.due_date);
                             return dateA - dateB;
                         }
 
-                        // 3. For completed items: Sort by Updated/Created DESC (Recently finished first)
-                        return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+                        // If both Completed: Sort by Completed Date DESC (Most recently finished first)
+                        // Fallback to updated_at if completed_at is missing
+                        const dateA = new Date(a.completed_at || a.updated_at);
+                        const dateB = new Date(b.completed_at || b.updated_at);
+                        return dateB - dateA;
                     })
                     .slice(0, 10)
                     .map(sa => ({
