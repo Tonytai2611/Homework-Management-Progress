@@ -7,6 +7,7 @@ import { MdAssignment } from 'react-icons/md'
 import { BsCalendar3 } from 'react-icons/bs'
 import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
 import ProgressBar from '../components/shared/ProgressBar'
+import logo from '../images/littlebuddies.png'
 
 import { TextGenerateEffect } from '../components/ui/text-generate-effect'
 import AssignmentCard from '../components/shared/AssignmentCard'
@@ -150,9 +151,7 @@ const StudentDashboard = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-purple-teal rounded-lg flex items-center justify-center mr-2 sm:mr-3">
-                                <span className="text-lg sm:text-xl font-bold text-white">LB</span>
-                            </div>
+                            <img src={logo} alt="Little Buddies" className="w-8 h-8 sm:w-10 sm:h-10 object-contain mr-2 sm:mr-3" />
                             <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Little Buddies</h1>
                         </div>
 

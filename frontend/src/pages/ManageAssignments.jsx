@@ -9,6 +9,7 @@ import Badge from '../components/shared/Badge'
 import EditAssignmentModal from '../components/EditAssignmentModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import AssignmentDetailModal from '../components/AssignmentDetailModal'
+import logo from '../images/littlebuddies.png'
 
 const ManageAssignments = () => {
     const { user, signout } = useAuth()
@@ -201,9 +202,7 @@ const ManageAssignments = () => {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center space-x-8">
                             <Link to="/admin/dashboard" className="flex items-center">
-                                <div className="w-10 h-10 bg-gradient-purple-teal rounded-lg flex items-center justify-center mr-3">
-                                    <span className="text-xl font-bold text-white">LB</span>
-                                </div>
+                                <img src={logo} alt="Little Buddies" className="w-10 h-10 object-contain mr-3" />
                                 <h1 className="text-2xl font-bold text-gray-900">Little Buddies</h1>
                             </Link>
 

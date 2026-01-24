@@ -6,6 +6,7 @@ import { RxDashboard } from 'react-icons/rx'
 import { MdAssignment } from 'react-icons/md'
 import { BsCalendar3 } from 'react-icons/bs'
 import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
+import logo from '../images/littlebuddies.png'
 
 const Header = () => {
     const { user, signout } = useAuth()
@@ -32,9 +33,7 @@ const Header = () => {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
                             <Link to="/student/dashboard" className="flex items-center">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-purple-teal rounded-lg flex items-center justify-center mr-2 sm:mr-3">
-                                    <span className="text-lg sm:text-xl font-bold text-white">LB</span>
-                                </div>
+                                <img src={logo} alt="Little Buddies" className="w-8 h-8 sm:w-10 sm:h-10 object-contain mr-2 sm:mr-3" />
                                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Little Buddies</h1>
                             </Link>
                         </div>
@@ -63,7 +62,7 @@ const Header = () => {
                             >
                                 Sign Out
                             </button>
-                            
+
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

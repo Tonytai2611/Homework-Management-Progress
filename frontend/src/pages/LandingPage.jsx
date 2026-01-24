@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import BlurText from '../components/BlurText'
 import ScrollFloat from '../components/ScrollFloat'
+import logo from '../images/littlebuddies.png'
 
 const LandingPage = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -24,9 +25,7 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-teal-400 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                                <span className="text-xl font-bold text-white">LB</span>
-                            </div>
+                            <img src={logo} alt="Little Buddies" className="w-10 h-10 object-contain mr-3" />
                             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-teal-500">
                                 Little Buddies
                             </span>
@@ -442,9 +441,7 @@ const LandingPage = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
                         <div className="col-span-2 md:col-span-1">
                             <div className="flex items-center mb-4">
-                                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-teal-400 rounded-lg flex items-center justify-center mr-2">
-                                    <span className="text-lg font-bold text-white">LB</span>
-                                </div>
+                                <img src={logo} alt="Little Buddies" className="w-8 h-8 object-contain mr-2" />
                                 <span className="text-xl font-bold text-gray-900">Little Buddies</span>
                             </div>
                             <p className="text-gray-500 text-sm">
