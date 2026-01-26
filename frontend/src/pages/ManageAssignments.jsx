@@ -38,7 +38,6 @@ const ManageAssignments = () => {
     // UI state
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
-    const [success, setSuccess] = useState('')
     const [selectedStudentFilter, setSelectedStudentFilter] = useState('all')
     const [editingAssignment, setEditingAssignment] = useState(null)
     const [deletingAssignment, setDeletingAssignment] = useState(null)
@@ -101,7 +100,7 @@ const ManageAssignments = () => {
         e.preventDefault()
         setLoading(true)
         setError('')
-        setSuccess('')
+
 
         try {
             await assignmentsAPI.create({
@@ -163,7 +162,7 @@ const ManageAssignments = () => {
         })
         setNewTask('')
         setError('')
-        setSuccess('')
+
     }
 
     const handleSignOut = () => {
@@ -235,12 +234,7 @@ const ManageAssignments = () => {
             </header>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Success/Error Messages */}
-                {success && (
-                    <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                        {success}
-                    </div>
-                )}
+
                 {error && (
                     <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                         {error}
@@ -551,8 +545,7 @@ const ManageAssignments = () => {
                     onUpdate={() => {
                         fetchAssignments()
                         setEditingAssignment(null)
-                        setSuccess('Assignment updated successfully!')
-                        setTimeout(() => setSuccess(''), 3000)
+                        showToast('Assignment updated successfully!', 'success')
                     }}
                 />
             )}

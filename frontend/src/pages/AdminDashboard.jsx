@@ -413,26 +413,47 @@ const AdminDashboard = () => {
 
                         <div className="px-6 py-6 space-y-6">
                             {/* Full stats */}
-                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                <div className="card bg-gradient-purple-teal text-white">
-                                    <p className="text-sm opacity-90">Total Tasks</p>
+                            {/* Full stats */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg transform hover:scale-105 transition-transform duration-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <p className="text-purple-100 text-sm font-medium">Total Tasks</p>
+                                        <span className="text-2xl opacity-80">📋</span>
+                                    </div>
                                     <p className="text-3xl font-bold">{selectedStudent.stats?.total || 0}</p>
                                 </div>
 
-                            </div>
-                            <div className="card bg-green-50">
-                                <p className="text-sm text-gray-600">Completed</p>
-                                <p className="text-3xl font-bold text-green-600">{selectedStudent.stats?.completed || 0}</p>
-                            </div>
-                            <div className="card bg-blue-50">
-                                <p className="text-sm text-gray-600">Pending</p>
-                                <p className="text-3xl font-bold text-blue-600">{selectedStudent.stats?.pending || 0}</p>
-                            </div>
-                            <div className="card bg-purple-50">
-                                <p className="text-sm text-gray-600">Completion</p>
-                                <p className="text-3xl font-bold text-purple-600">
-                                    {formatPercentage(selectedStudent.stats?.completionRate)}%
-                                </p>
+                                <div className="p-4 rounded-xl bg-green-50 border border-green-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <p className="text-green-600 text-sm font-medium">Completed</p>
+                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                            ✓
+                                        </div>
+                                    </div>
+                                    <p className="text-3xl font-bold text-gray-800">{selectedStudent.stats?.completed || 0}</p>
+                                </div>
+
+                                <div className="p-4 rounded-xl bg-orange-50 border border-orange-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <p className="text-orange-600 text-sm font-medium">Pending</p>
+                                        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                                            ⏳
+                                        </div>
+                                    </div>
+                                    <p className="text-3xl font-bold text-gray-800">{selectedStudent.stats?.pending || 0}</p>
+                                </div>
+
+                                <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <p className="text-purple-600 text-sm font-medium">Completion Rate</p>
+                                        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                            📊
+                                        </div>
+                                    </div>
+                                    <p className="text-3xl font-bold text-gray-800">
+                                        {formatPercentage(selectedStudent.stats?.completionRate)}<span className="text-lg text-gray-500 ml-1">%</span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -441,26 +462,46 @@ const AdminDashboard = () => {
                             <h3 className="text-lg font-bold text-gray-900 mb-4">All Assignments ({selectedStudent.recentAssignments?.length || 0})</h3>
                             <div className="space-y-3">
                                 {selectedStudent.recentAssignments?.map((assignment) => (
-                                    <div key={assignment.id} className="border border-gray-200 rounded-lg p-4 hover:border-purple-200 transition-colors">
+                                    <div key={assignment.id} className="group border border-gray-100 rounded-xl p-4 hover:border-purple-200 hover:shadow-md transition-all duration-200 bg-white">
                                         <div className="flex items-center justify-between">
-                                            <div>
-                                                <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
-                                                <p className="text-sm text-gray-600">{assignment.subject}</p>
+                                            <div className="flex items-center space-x-4">
+                                                <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-purple-50 transition-colors">
+                                                    <SubjectIcon subject={assignment.subject} className="text-2xl" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
+                                                    <div className="flex items-center text-xs text-gray-500 mt-1 space-x-3">
+                                                        <span className="flex items-center text-purple-600 font-medium bg-purple-50 px-2 py-0.5 rounded-full">
+                                                            {assignment.subject}
+                                                        </span>
+                                                        {assignment.due_date && (
+                                                            <span className="flex items-center">
+                                                                📅 {new Date(assignment.due_date).toLocaleDateString()}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
+
                                             <div className="flex items-center space-x-3">
-                                                <Badge variant={assignment.status === 'completed' ? 'completed' : 'pending'}>
-                                                    {assignment.status}
-                                                </Badge>
-                                                {assignment.status !== 'completed' && (
-                                                    <button
-                                                        onClick={() => handleUpdateStatus(assignment.studentAssignmentId, 'completed')}
-                                                        className="p-1 rounded-full text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
-                                                        title="Mark as Completed"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </button>
+                                                {assignment.status === 'completed' ? (
+                                                    <span className="flex items-center space-x-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wide">
+                                                        <span>✓</span>
+                                                        <span>Done</span>
+                                                    </span>
+                                                ) : (
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium uppercase tracking-wide">
+                                                            Pending
+                                                        </span>
+                                                        <button
+                                                            onClick={() => handleUpdateStatus(assignment.studentAssignmentId, 'completed')}
+                                                            className="flex items-center space-x-1 px-3 py-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors text-xs font-semibold border border-green-200"
+                                                            title="Mark as Completed"
+                                                        >
+                                                            <span>✓ Mark Done</span>
+                                                        </button>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>

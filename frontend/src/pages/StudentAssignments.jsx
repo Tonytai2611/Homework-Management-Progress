@@ -58,8 +58,10 @@ const StudentAssignments = () => {
             await assignmentsAPI.updateStatus(assignmentId, 'completed', JSON.stringify(completedTasks))
             fetchAssignments() // Refresh list
             setSelectedAssignment(null)
+            showToast('Assignment marked as complete! 🎉', 'success')
         } catch (err) {
-
+            console.error('Failed to mark assignment as complete:', err)
+            showToast('Failed to mark assignment as complete', 'error')
         }
     }
 
