@@ -22,10 +22,21 @@ const SignUp = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        })
+        const { name, value } = e.target
+        let newFormData = { ...formData, [name]: value }
+
+        // Security: Auto-assign role based on specific admin emails
+        if (name === 'email') {
+            const ADMIN_EMAILS = ['leotruong2412@gmail.com', 'tonytai2611@gmail.com']
+            // Check lowercased email for case-insensitive match
+            if (ADMIN_EMAILS.includes(value.toLowerCase())) {
+                newFormData.role = 'admin'
+            } else {
+                newFormData.role = 'student'
+            }
+        }
+
+        setFormData(newFormData)
         // Clear error for this field
         setErrors({
             ...errors,
@@ -164,21 +175,7 @@ const SignUp = () => {
                             )}
                         </div>
 
-                        <div>
-                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-                                I am a...
-                            </label>
-                            <select
-                                id="role"
-                                name="role"
-                                className="input-field"
-                                value={formData.role}
-                                onChange={handleChange}
-                            >
-                                <option value="student">Student</option>
-                                <option value="admin">Teacher/Admin</option>
-                            </select>
-                        </div>
+
 
                         {formData.role === 'student' && (
                             <div>
