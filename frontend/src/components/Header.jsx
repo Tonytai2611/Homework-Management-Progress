@@ -7,15 +7,18 @@ import { MdAssignment } from 'react-icons/md'
 import { BsCalendar3 } from 'react-icons/bs'
 import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
 import logo from '../images/littlebuddies.png'
+import { useToast } from '../contexts/ToastContext'
 
 const Header = () => {
     const { user, signout } = useAuth()
+    const { showToast } = useToast()
     const navigate = useNavigate()
     const location = useLocation()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     const handleSignOut = () => {
         signout()
+        showToast('Logged out successfully', 'info')
         navigate('/signin')
     }
 

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { studentsAPI } from '../api/assignments'
 import { RxDashboard } from 'react-icons/rx'
+import { useToast } from '../contexts/ToastContext'
 import { MdAssignment } from 'react-icons/md'
 import { BsCalendar3 } from 'react-icons/bs'
 import { HiOutlineChartBar, HiMenu, HiX } from 'react-icons/hi'
@@ -16,6 +17,7 @@ import AssignmentDetailModal from '../components/AssignmentDetailModal'
 
 const StudentDashboard = () => {
     const { user, signout } = useAuth()
+    const { showToast } = useToast()
     const navigate = useNavigate()
     const location = useLocation()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -55,8 +57,10 @@ const StudentDashboard = () => {
                 })
                 setAssignments(data.recentAssignments || [])
             }
+            showToast('Assignment status updated! 🚀', 'success')
         } catch (err) {
             console.error('Failed to update status:', err)
+            showToast('Failed to update assignment status', 'error')
             window.location.reload()
         }
     }
@@ -90,8 +94,10 @@ const StudentDashboard = () => {
 
                 // Close the modal
                 setSelectedAssignment(null)
+                showToast('Assignment marked as complete! 🎉', 'success')
             } catch (err) {
                 console.error('Failed to update status from modal:', err)
+                showToast('Failed to mark assignment as complete', 'error')
                 // Revert optimistic update if needed, or just reload
                 window.location.reload()
             }

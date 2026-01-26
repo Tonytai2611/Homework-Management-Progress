@@ -3,13 +3,24 @@ import Badge from '../components/shared/Badge'
 import Header from '../components/Header'
 import { assignmentsAPI } from '../api/assignments'
 import AssignmentDetailModal from '../components/AssignmentDetailModal'
+import { HiLightningBolt, HiCheckCircle, HiCalendar, HiClock } from 'react-icons/hi'
+import { useToast } from '../contexts/ToastContext'
 
 const StudentCalendar = () => {
+    const { showToast } = useToast()
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [assignments, setAssignments] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [selectedAssignment, setSelectedAssignment] = useState(null)
+    const [activeTab, setActiveTab] = useState('Assignments')
+
+    const tabs = [
+        { name: 'Assignments', icon: <HiLightningBolt className="w-4 h-4" /> },
+        { name: 'Today', icon: <HiCalendar className="w-4 h-4" /> },
+        { name: 'Due This Week', icon: <HiClock className="w-4 h-4" /> },
+        { name: 'Complete', icon: <HiCheckCircle className="w-4 h-4" /> }
+    ]
 
     useEffect(() => {
         fetchAssignments()
@@ -21,19 +32,41 @@ const StudentCalendar = () => {
             const response = await assignmentsAPI.getAll()
             setAssignments(response.data || [])
         } catch (err) {
-
             setError('Failed to load assignments')
         } finally {
             setLoading(false)
         }
     }
 
-    // Group assignments by date
+    // Filter assignments based on active tab
+    const getFilteredAssignments = () => {
+        if (activeTab === 'Today') {
+            const todayStr = new Date().toISOString().split('T')[0]
+            return assignments.filter(a => a.due_date && a.due_date.startsWith(todayStr))
+        }
+        if (activeTab === 'Due This Week') {
+            const today = new Date()
+            const nextWeek = new Date(today)
+            nextWeek.setDate(today.getDate() + 7)
+            return assignments.filter(a => {
+                if (!a.due_date) return false
+                const d = new Date(a.due_date)
+                return d >= today && d <= nextWeek
+            })
+        }
+        if (activeTab === 'Complete') {
+            return assignments.filter(a => a.status === 'completed')
+        }
+        return assignments // 'Assignments' (All)
+    }
+
+    const filteredAssignments = getFilteredAssignments()
+
+    // Group filtered assignments by date
     const getAssignmentsByDate = () => {
         const grouped = {}
-        assignments.forEach(assignment => {
+        filteredAssignments.forEach(assignment => {
             if (assignment.due_date) {
-                // Extract YYYY-MM-DD from ISO date
                 const dateKey = assignment.due_date.split('T')[0]
                 if (!grouped[dateKey]) {
                     grouped[dateKey] = []
@@ -79,23 +112,51 @@ const StudentCalendar = () => {
             currentMonth.getFullYear() === today.getFullYear()
     }
 
-    const getSubjectColor = (subject) => {
-        const colors = {
-            'Reading': 'bg-blue-100 text-blue-800 border-blue-200',
+    const getSubjectColor = (assignment) => {
+        const baseColors = {
+            'Reading': 'bg-purple-100 text-purple-800 border-purple-200',
             'Writing': 'bg-green-100 text-green-800 border-green-200',
-            'Listening': 'bg-purple-100 text-purple-800 border-purple-200',
+            'Listening': 'bg-blue-100 text-blue-800 border-blue-200',
             'Speaking': 'bg-orange-100 text-orange-800 border-orange-200',
-            'Grammar': 'bg-teal-100 text-teal-800 border-teal-200'
+            'Grammar': 'bg-red-100 text-red-800 border-red-200'
         }
-        return colors[subject] || 'bg-gray-100 text-gray-800 border-gray-200'
+
+        const colorClass = baseColors[assignment.subject] || 'bg-gray-100 text-gray-800 border-gray-200'
+
+        if (assignment.status === 'completed') {
+            return `${colorClass} line-through opacity-75`
+        }
+        return colorClass
     }
 
     const getStatusDot = (status) => {
+        // If completed, maybe no dot or gray dot, but the whole item is grayed out above.
+        // Keeping logic simple:
         const colors = {
             'completed': 'bg-green-500',
-            'pending': 'bg-gray-400'
+            'pending': 'bg-gray-400' // Dot color. The text/bg handles the main distinction now.
         }
         return colors[status] || 'bg-gray-400'
+    }
+
+    const handleMarkComplete = async (assignmentId) => {
+        try {
+            await assignmentsAPI.updateStatus(assignmentId, 'completed')
+
+            // Update local state
+            setAssignments(prev => prev.map(a =>
+                a.id === assignmentId
+                    ? { ...a, status: 'completed' }
+                    : a
+            ))
+
+            // Close modal
+            setSelectedAssignment(null)
+            showToast('Assignment marked as complete! 🎉', 'success')
+        } catch (err) {
+            console.error('Failed to mark assignment as complete:', err)
+            showToast('Failed to mark assignment as complete', 'error')
+        }
     }
 
     return (
@@ -107,6 +168,23 @@ const StudentCalendar = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Assignment Calendar</h1>
                     <p className="text-gray-600 mt-1 text-sm sm:text-base">View your assignments by date</p>
+
+                    {/* Tabs */}
+                    <div className="flex flex-wrap gap-2 sm:gap-4 mt-6">
+                        {tabs.map(tab => (
+                            <button
+                                key={tab.name}
+                                onClick={() => setActiveTab(tab.name)}
+                                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === tab.name
+                                    ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-transparent'
+                                    }`}
+                            >
+                                {tab.icon}
+                                <span>{tab.name}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -180,7 +258,7 @@ const StudentCalendar = () => {
                                                     <div
                                                         key={idx}
                                                         onClick={() => setSelectedAssignment(assignment)}
-                                                        className={`text-xs px-1 py-0.5 sm:px-1.5 sm:py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(assignment.subject)}`}
+                                                        className={`text-xs px-1 py-0.5 sm:px-1.5 sm:py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(assignment)}`}
                                                     >
                                                         <div className="flex items-center space-x-1">
                                                             <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full flex-shrink-0 ${getStatusDot(assignment.status)}`}></span>
@@ -192,7 +270,7 @@ const StudentCalendar = () => {
                                                 {dayAssignments.length > 1 && (
                                                     <div
                                                         onClick={() => setSelectedAssignment(dayAssignments[1])}
-                                                        className={`hidden sm:block text-xs px-1.5 py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(dayAssignments[1].subject)}`}
+                                                        className={`hidden sm:block text-xs px-1.5 py-1 rounded border cursor-pointer hover:shadow-sm transition-shadow ${getSubjectColor(dayAssignments[1])}`}
                                                     >
                                                         <div className="flex items-center space-x-1">
                                                             <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot(dayAssignments[1].status)}`}></span>
@@ -248,10 +326,10 @@ const StudentCalendar = () => {
                 <AssignmentDetailModal
                     assignment={selectedAssignment}
                     onClose={() => setSelectedAssignment(null)}
+                    onMarkComplete={handleMarkComplete}
                 />
             )}
         </div>
     )
 }
-
 export default StudentCalendar

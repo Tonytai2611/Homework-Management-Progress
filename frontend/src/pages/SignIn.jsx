@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import logo from '../images/littlebuddies.png'
 
 const SignIn = () => {
     const navigate = useNavigate()
     const { signin } = useAuth()
+    const { showToast } = useToast()
 
     const [formData, setFormData] = useState({
         email: '',
@@ -34,6 +36,7 @@ const SignIn = () => {
         setLoading(false)
 
         if (result.success) {
+            showToast('Welcome back! 👋', 'success')
             // Redirect based on role
             if (result.user.role === 'admin') {
                 navigate('/admin/dashboard')
@@ -42,6 +45,7 @@ const SignIn = () => {
             }
         } else {
             setError(result.message)
+            showToast(result.message, 'error')
         }
     }
 
