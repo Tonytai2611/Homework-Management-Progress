@@ -316,10 +316,15 @@ const AdminDashboard = () => {
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <div className="group relative flex items-center justify-center cursor-pointer" onClick={() => handleEditPoints(student.student)}>
-                                                    <p className="text-sm text-gray-600 flex items-center">
-                                                        ⭐ {student.student?.points || 0} pts
-                                                        <span className="ml-1 opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity">✎</span>
+                                                <div
+                                                    className="group relative flex items-center justify-center cursor-pointer px-3 py-1.5 rounded-full hover:bg-purple-50 hover:shadow-sm border border-transparent hover:border-purple-200 transition-all duration-200"
+                                                    onClick={() => handleEditPoints(student.student)}
+                                                    title="Click to edit points"
+                                                >
+                                                    <p className="text-sm text-gray-700 font-medium flex items-center">
+                                                        <span className="mr-1.5 text-yellow-500">⭐</span>
+                                                        {student.student?.points || 0} pts
+                                                        <span className="ml-2 text-purple-400 group-hover:text-purple-600">✎</span>
                                                     </p>
                                                 </div>
                                             )}
@@ -382,13 +387,16 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
 
-                                {/* View Details Button */}
-                                <button
-                                    onClick={() => setSelectedStudent(student)}
-                                    className="w-full mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
-                                >
-                                    View Details →
-                                </button>
+                                {/* Footer Actions */}
+                                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+                                    <button
+                                        onClick={() => setSelectedStudent(student)}
+                                        className="inline-flex items-center space-x-2 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm"
+                                    >
+                                        <span>View Details</span>
+                                        <span>→</span>
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>

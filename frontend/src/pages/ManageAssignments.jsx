@@ -51,17 +51,34 @@ const ManageAssignments = () => {
         fetchAssignments()
     }, [])
 
+    const [sortBy, setSortBy] = useState('newest')
+
     useEffect(() => {
-        if (selectedStudentFilter === 'all') {
-            setFilteredAssignments(assignments)
-        } else {
-            // Filter assignments by student
-            const filtered = assignments.filter(a =>
+        let result = [...assignments]
+
+        // 1. Filter by student
+        if (selectedStudentFilter !== 'all') {
+            result = result.filter(a =>
                 a.student_assignments?.some(sa => sa.student_id === selectedStudentFilter)
             )
-            setFilteredAssignments(filtered)
         }
-    }, [selectedStudentFilter, assignments])
+
+        // 2. Sort
+        result.sort((a, b) => {
+            switch (sortBy) {
+                case 'newest':
+                    return new Date(b.created_at || b.id) - new Date(a.created_at || a.id)
+                case 'oldest':
+                    return new Date(a.created_at || a.id) - new Date(b.created_at || b.id)
+                case 'dueDate':
+                    return new Date(a.due_date) - new Date(b.due_date)
+                default:
+                    return 0
+            }
+        })
+
+        setFilteredAssignments(result)
+    }, [selectedStudentFilter, assignments, sortBy])
 
     const fetchStudents = async () => {
         try {
@@ -75,8 +92,9 @@ const ManageAssignments = () => {
     const fetchAssignments = async () => {
         try {
             const response = await assignmentsAPI.getAll()
-            setAssignments(response.data || [])
-            setFilteredAssignments(response.data || [])
+            const sortedAssignments = (response.data || []).sort((a, b) => b.id - a.id)
+            setAssignments(sortedAssignments)
+            setFilteredAssignments(sortedAssignments)
         } catch (err) {
 
         }
@@ -449,18 +467,30 @@ const ManageAssignments = () => {
                             <h2 className="text-xl font-bold text-gray-900">All Assignments</h2>
                         </div>
 
-                        <select
-                            value={selectedStudentFilter}
-                            onChange={(e) => setSelectedStudentFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        >
-                            <option value="all">All Students</option>
-                            {students.map(student => (
-                                <option key={student.id} value={student.id}>
-                                    {student.full_name}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="flex items-center space-x-4">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            >
+                                <option value="newest">Sort by: Newest</option>
+                                <option value="oldest">Sort by: Oldest</option>
+                                <option value="dueDate">Sort by: Due Date</option>
+                            </select>
+
+                            <select
+                                value={selectedStudentFilter}
+                                onChange={(e) => setSelectedStudentFilter(e.target.value)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            >
+                                <option value="all">All Students</option>
+                                {students.map(student => (
+                                    <option key={student.id} value={student.id}>
+                                        {student.full_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="space-y-4">
