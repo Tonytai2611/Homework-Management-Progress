@@ -20,7 +20,14 @@ const StudentAssignments = () => {
     const [error, setError] = useState('')
     const [selectedAssignment, setSelectedAssignment] = useState(null)
 
-    const subjects = ['all', 'Reading', 'Writing', 'Listening', 'Speaking', 'Grammar']
+    const subjects = [
+        { value: 'all', label: 'All Subjects' },
+        { value: 'Reading', label: 'Reading' },
+        { value: 'Writing', label: 'Writing' },
+        { value: 'Listening', label: 'Listening' },
+        { value: 'Speaking', label: 'Speaking' },
+        { value: 'Grammar', label: 'Grammar & Vocabulary' }
+    ]
 
     // Fetch assignments
     useEffect(() => {
@@ -160,8 +167,8 @@ const StudentAssignments = () => {
                                 className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             >
                                 {subjects.map((subject) => (
-                                    <option key={subject} value={subject}>
-                                        {subject.charAt(0).toUpperCase() + subject.slice(1)}
+                                    <option key={subject.value} value={subject.value}>
+                                        {subject.label}
                                     </option>
                                 ))}
                             </select>

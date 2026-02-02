@@ -43,7 +43,13 @@ const ManageAssignments = () => {
     const [deletingAssignment, setDeletingAssignment] = useState(null)
     const [viewingAssignment, setViewingAssignment] = useState(null)
 
-    const subjects = ['Reading', 'Writing', 'Listening', 'Speaking', 'Grammar']
+    const subjects = [
+        { value: 'Reading', label: 'Reading' },
+        { value: 'Writing', label: 'Writing' },
+        { value: 'Listening', label: 'Listening' },
+        { value: 'Speaking', label: 'Speaking' },
+        { value: 'Grammar', label: 'Grammar & Vocabulary' }
+    ]
     const priorities = ['low', 'medium', 'high']
 
     useEffect(() => {
@@ -310,7 +316,7 @@ const ManageAssignments = () => {
                                 >
                                     <option value="">Select subject...</option>
                                     {subjects.map(subject => (
-                                        <option key={subject} value={subject}>{subject}</option>
+                                        <option key={subject.value} value={subject.value}>{subject.label}</option>
                                     ))}
                                 </select>
                             </div>

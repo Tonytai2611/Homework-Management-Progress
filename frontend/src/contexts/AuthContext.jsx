@@ -26,9 +26,9 @@ export const AuthProvider = ({ children }) => {
         setLoading(false)
     }, [])
 
-    const signin = async (email, password) => {
+    const signin = async (fullName, password) => {
         try {
-            const response = await api.post('/auth/signin', { email, password })
+            const response = await api.post('/auth/signin', { fullName, password })
             const { token, user: userData } = response.data
 
             localStorage.setItem('token', token)
@@ -44,10 +44,10 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    const signup = async (email, password, fullName, role, level) => {
+    const signup = async (password, fullName, role, level) => {
         try {
             const response = await api.post('/auth/signup', {
-                email,
+                // email is generated on backend
                 password,
                 fullName,
                 role,

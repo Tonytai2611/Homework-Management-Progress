@@ -36,10 +36,7 @@ const router = express.Router()
 router.post(
     '/signup',
     [
-        body('email')
-            .isEmail()
-            .normalizeEmail()
-            .withMessage('Please provide a valid email'),
+
         body('password')
             .isLength({ min: 6 })
             .withMessage('Password must be at least 6 characters long'),
@@ -85,10 +82,10 @@ router.post(
 router.post(
     '/signin',
     [
-        body('email')
-            .isEmail()
-            .normalizeEmail()
-            .withMessage('Please provide a valid email'),
+        body('fullName')
+            .trim()
+            .notEmpty()
+            .withMessage('Full name is required'),
         body('password')
             .notEmpty()
             .withMessage('Password is required')

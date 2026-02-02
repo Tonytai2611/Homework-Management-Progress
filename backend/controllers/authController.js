@@ -10,7 +10,7 @@ const generateToken = (user) => {
     return jwt.sign(
         {
             id: user.id,
-            email: user.email,
+            fullName: user.full_name,
             role: user.role,
             fullName: user.full_name
         },
@@ -45,19 +45,23 @@ export const signup = async (req, res) => {
             })
         }
 
-        const { email, password, fullName, role, level } = req.body
+        const { password, fullName, role, level } = req.body
 
-        // Check if user already exists
+        // Generate a dummy email since we are using Full Name only
+        // Format: fullname_timestamp@littlebuddies.local
+        const email = `${fullName.replace(/\s+/g, '').toLowerCase()}_${Date.now()}@littlebuddies.local`
+
+        // Check if user already exists by fullName (treating it as unique for this flow)
         const { data: existingUser } = await supabase
             .from('users')
             .select('id')
-            .eq('email', email)
+            .eq('full_name', fullName)
             .single()
 
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: 'Email already registered'
+                message: 'Username already taken'
             })
         }
 
@@ -114,19 +118,19 @@ export const signin = async (req, res) => {
             })
         }
 
-        const { email, password } = req.body
+        const { fullName, password } = req.body
 
-        // Find user
+        // Find user by Full Name
         const { data: user, error } = await supabase
             .from('users')
             .select('*')
-            .eq('email', email)
+            .eq('full_name', fullName)
             .single()
 
         if (error || !user) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid credentials'
+                message: 'User not found'
             })
         }
 

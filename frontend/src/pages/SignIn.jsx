@@ -10,7 +10,7 @@ const SignIn = () => {
     const { showToast } = useToast()
 
     const [formData, setFormData] = useState({
-        email: '',
+        fullName: '',
         password: ''
     })
     const [error, setError] = useState('')
@@ -31,7 +31,7 @@ const SignIn = () => {
         setError('')
         setLoading(true)
 
-        const result = await signin(formData.email, formData.password)
+        const result = await signin(formData.fullName, formData.password)
 
         setLoading(false)
 
@@ -73,17 +73,17 @@ const SignIn = () => {
                         )}
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address
+                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                                Full Name
                             </label>
                             <input
-                                id="email"
-                                name="email"
-                                type="email"
+                                id="fullName"
+                                name="fullName"
+                                type="text"
                                 required
                                 className="input-field"
-                                placeholder="leon@example.com"
-                                value={formData.email}
+                                placeholder="Leon"
+                                value={formData.fullName}
                                 onChange={handleChange}
                             />
                         </div>

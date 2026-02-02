@@ -8,7 +8,6 @@ const SignUp = () => {
     const { signup } = useAuth()
 
     const [formData, setFormData] = useState({
-        email: '',
         password: '',
         confirmPassword: '',
         fullName: '',
@@ -25,15 +24,14 @@ const SignUp = () => {
         const { name, value } = e.target
         let newFormData = { ...formData, [name]: value }
 
-        // Security: Auto-assign role based on specific admin emails
-        if (name === 'email') {
-            const ADMIN_EMAILS = ['leotruong2412@gmail.com', 'tonytai2611@gmail.com']
-            // Check lowercased email for case-insensitive match
-            if (ADMIN_EMAILS.includes(value.toLowerCase())) {
-                newFormData.role = 'admin'
-            } else {
-                newFormData.role = 'student'
-            }
+        // Security: Auto-assign role based on specific names (TEMPORARY/OPTIONAL)
+        // Since we removed email, we can't check specific emails. 
+        // We might want to remove this or check specific names if really needed.
+        // For now, defaulting to student mostly.
+        if (name === 'fullName') {
+            // Example: if name contains "Admin", set to admin? Or just remove this logic?
+            // The user asked to remove email. The logic checked emails.
+            // I will remove the email check logic for now.
         }
 
         setFormData(newFormData)
@@ -51,11 +49,7 @@ const SignUp = () => {
             newErrors.fullName = 'Full name is required'
         }
 
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required'
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Email is invalid'
-        }
+
 
         if (!formData.password) {
             newErrors.password = 'Password is required'
@@ -85,7 +79,6 @@ const SignUp = () => {
         setLoading(true)
 
         const result = await signup(
-            formData.email,
             formData.password,
             formData.fullName,
             formData.role,
@@ -156,24 +149,7 @@ const SignUp = () => {
                             )}
                         </div>
 
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                                className={`input-field ${errors.email ? 'border-red-500' : ''}`}
-                                placeholder="leon@example.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                            {errors.email && (
-                                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                            )}
-                        </div>
+
 
 
 
