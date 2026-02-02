@@ -39,6 +39,7 @@ export const SubjectIcon = ({ subject, className = '' }) => {
  * Format subject for display
  */
 export const formatSubject = (subject) => {
-    if (subject === 'Grammar') return 'Grammar & Vocabulary'
+    if (!subject) return ''
+    if (subject.toLowerCase() === 'grammar' || subject === 'Grammar & Vocabulary') return 'Grammar & Vocabulary'
     return subject
 }

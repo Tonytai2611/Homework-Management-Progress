@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import Badge from './Badge'
-import Badge from './Badge'
 import { SubjectIcon, formatSubject } from '../../utils/subjectIcons'
 import DescriptionIcon from '@mui/icons-material/Description'
 import { motion } from 'framer-motion'
@@ -19,7 +18,7 @@ const AssignmentCard = ({
         'Writing': 'bg-gradient-to-br from-pink-400 to-rose-600 shadow-pink-200',
         'Listening': 'bg-gradient-to-br from-yellow-400 to-orange-500 shadow-orange-200',
         'Speaking': 'bg-gradient-to-br from-green-400 to-emerald-600 shadow-emerald-200',
-        'Grammar & Vocabulary': 'bg-gradient-to-br from-purple-400 to-indigo-600 shadow-purple-200'
+        'Grammar': 'bg-gradient-to-br from-purple-400 to-indigo-600 shadow-purple-200'
     }
 
     const getGradient = (subj) => subjectGradients[subj] || 'bg-gradient-to-br from-gray-400 to-gray-600'
