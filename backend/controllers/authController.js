@@ -47,9 +47,7 @@ export const signup = async (req, res) => {
 
         const { password, fullName, role, level } = req.body
 
-        // Generate a dummy email since we are using Full Name only
-        // Format: fullname_timestamp@littlebuddies.local
-        const email = `${fullName.replace(/\s+/g, '').toLowerCase()}_${Date.now()}@littlebuddies.local`
+
 
         // Check if user already exists by fullName (treating it as unique for this flow)
         const { data: existingUser } = await supabase
@@ -73,7 +71,6 @@ export const signup = async (req, res) => {
         const { data: newUser, error } = await supabase
             .from('users')
             .insert([{
-                email,
                 password_hash: passwordHash,
                 full_name: fullName,
                 role,
@@ -97,10 +94,11 @@ export const signup = async (req, res) => {
             user: formatUser(newUser)
         })
     } catch (error) {
-
+        console.error('Registration error details:', error)
         res.status(500).json({
             success: false,
-            message: 'Registration failed'
+            message: 'Registration failed',
+            error: error.message // Optional: only for debugging, might want to remove for prod
         })
     }
 }
