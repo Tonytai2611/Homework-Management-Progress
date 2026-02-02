@@ -7,7 +7,7 @@ export const getAllStudents = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('users')
-            .select('id, email, full_name, level, created_at')
+            .select('id, full_name, level, created_at')
             .eq('role', 'student')
             .order('created_at', { ascending: false })
 
@@ -158,7 +158,6 @@ export const getStudentDetails = async (req, res) => {
             data: {
                 student: {
                     id: student.id,
-                    email: student.email,
                     fullName: student.full_name,
                     level: student.level,
                     points: student.points,

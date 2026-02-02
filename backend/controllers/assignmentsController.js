@@ -12,7 +12,7 @@ export const getAllAssignments = async (req, res) => {
             .from('assignments')
             .select(`
         *,
-        created_by_user:users!assignments_created_by_fkey(id, full_name, email),
+        created_by_user:users!assignments_created_by_fkey(id, full_name),
         student_assignments(student_id)
       `)
 
@@ -72,7 +72,7 @@ export const getStudentAssignments = async (req, res) => {
         // Fetch assignments
         let assignmentsQuery = supabase
             .from('assignments')
-            .select('*, created_by_user:users!assignments_created_by_fkey(id, full_name, email)')
+            .select('*, created_by_user:users!assignments_created_by_fkey(id, full_name)')
             .in('id', assignmentIds)
 
         // Filter by subject if provided
