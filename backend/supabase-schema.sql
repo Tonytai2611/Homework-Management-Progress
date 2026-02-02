@@ -17,7 +17,7 @@ END $$;
 
 -- Assignment subjects
 DO $$ BEGIN
-  CREATE TYPE subject_type AS ENUM ('Reading', 'Writing', 'Listening', 'Speaking', 'Grammar');
+  CREATE TYPE subject_type AS ENUM ('Reading', 'Writing', 'Listening', 'Speaking', 'Grammar & Vocabulary');
 EXCEPTION
   WHEN duplicate_object THEN null;
 END $$;

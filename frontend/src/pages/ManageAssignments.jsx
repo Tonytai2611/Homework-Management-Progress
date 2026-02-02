@@ -48,7 +48,7 @@ const ManageAssignments = () => {
         { value: 'Writing', label: 'Writing' },
         { value: 'Listening', label: 'Listening' },
         { value: 'Speaking', label: 'Speaking' },
-        { value: 'Grammar', label: 'Grammar & Vocabulary' }
+        { value: 'Grammar & Vocabulary', label: 'Grammar & Vocabulary & Vocabulary' }
     ]
     const priorities = ['low', 'medium', 'high']
 

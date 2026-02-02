@@ -12,7 +12,7 @@ export const getSubjectIcon = (subject) => {
         'Writing': 'fi fi-rr-pencil',
         'Listening': FaHeadphones,
         'Speaking': RiSpeakLine,
-        'Grammar': 'fi fi-rs-document'
+        'Grammar & Vocabulary': 'fi fi-rs-document'
     }
     return icons[subject] || 'fi fi-rs-document'
 }

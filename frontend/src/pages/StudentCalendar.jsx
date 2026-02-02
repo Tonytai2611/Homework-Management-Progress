@@ -118,7 +118,7 @@ const StudentCalendar = () => {
             'Writing': 'bg-green-100 text-green-800 border-green-200',
             'Listening': 'bg-blue-100 text-blue-800 border-blue-200',
             'Speaking': 'bg-orange-100 text-orange-800 border-orange-200',
-            'Grammar': 'bg-red-100 text-red-800 border-red-200'
+            'Grammar & Vocabulary': 'bg-red-100 text-red-800 border-red-200'
         }
 
         const colorClass = baseColors[assignment.subject] || 'bg-gray-100 text-gray-800 border-gray-200'
@@ -302,7 +302,7 @@ const StudentCalendar = () => {
                                     <Badge variant="success"><span className="hidden sm:inline">✍️ </span>Writing</Badge>
                                     <Badge variant="info"><span className="hidden sm:inline">👂 </span>Listening</Badge>
                                     <Badge variant="warning"><span className="hidden sm:inline">🗣️ </span>Speaking</Badge>
-                                    <Badge variant="danger"><span className="hidden sm:inline">📝 </span>Grammar</Badge>
+                                    <Badge variant="danger"><span className="hidden sm:inline">📝 </span>Grammar & Vocabulary</Badge>
                                 </div>
                                 <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Status</h3>
                                 <div className="flex flex-wrap gap-2 sm:gap-3">

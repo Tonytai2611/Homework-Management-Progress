@@ -19,7 +19,7 @@ const EditAssignmentModal = ({ assignment, onClose, onUpdate }) => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
-    const subjects = ['Reading', 'Writing', 'Listening', 'Speaking', 'Grammar']
+    const subjects = ['Reading', 'Writing', 'Listening', 'Speaking', 'Grammar & Vocabulary']
     const priorities = ['low', 'medium', 'high']
 
     const handleInputChange = (e) => {

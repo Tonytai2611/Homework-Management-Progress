@@ -101,7 +101,7 @@ const StudentProgress = () => {
                                         'Writing': 'green',
                                         'Listening': 'purple',
                                         'Speaking': 'orange',
-                                        'Grammar': 'teal'
+                                        'Grammar & Vocabulary': 'teal'
                                     }
                                     return colors[subjectName] || 'purple'
                                 }

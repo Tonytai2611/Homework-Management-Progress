@@ -71,7 +71,7 @@ const AdminDashboard = () => {
             'Writing': 'green',
             'Listening': 'purple',
             'Speaking': 'orange',
-            'Grammar': 'teal'
+            'Grammar & Vocabulary': 'teal'
         }
         return colors[subject] || 'purple'
     }

@@ -338,7 +338,7 @@ const StudentDashboard = () => {
                             const skillsConfig = [
                                 { name: 'Reading', color: 'blue' },
                                 { name: 'Writing', color: 'green' },
-                                { name: 'Grammar', color: 'green' },
+                                { name: 'Grammar & Vocabulary', color: 'green' },
                                 { name: 'Listening', color: 'purple' },
                                 { name: 'Speaking', color: 'orange' }
                             ]

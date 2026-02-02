@@ -26,7 +26,7 @@ const StudentAssignments = () => {
         { value: 'Writing', label: 'Writing' },
         { value: 'Listening', label: 'Listening' },
         { value: 'Speaking', label: 'Speaking' },
-        { value: 'Grammar', label: 'Grammar & Vocabulary' }
+        { value: 'Grammar & Vocabulary', label: 'Grammar & Vocabulary & Vocabulary' }
     ]
 
     // Fetch assignments
