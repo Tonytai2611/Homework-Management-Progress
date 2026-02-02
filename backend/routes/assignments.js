@@ -34,7 +34,7 @@ const router = express.Router()
  *         name: subject
  *         schema:
  *           type: string
- *           enum: [Reading, Writing, Listening, Speaking, Grammar & Vocabulary]
+ *           enum: [Reading, Writing, Listening, Speaking, Grammar]
  *     responses:
  *       200:
  *         description: List of assignments
@@ -104,7 +104,7 @@ router.get('/:id', authenticateToken, getAssignment)
  *                 type: string
  *               subject:
  *                 type: string
- *                 enum: [Reading, Writing, Listening, Speaking, Grammar & Vocabulary]
+ *                 enum: [Reading, Writing, Listening, Speaking, Grammar]
  *               description:
  *                 type: string
  *               link:
@@ -129,7 +129,7 @@ router.post(
     requireAdmin,
     [
         body('title').trim().notEmpty().withMessage('Title is required'),
-        body('subject').isIn(['Reading', 'Writing', 'Listening', 'Speaking', 'Grammar & Vocabulary']),
+        body('subject').isIn(['Reading', 'Writing', 'Listening', 'Speaking', 'Grammar']),
         body('dueDate').isISO8601().withMessage('Valid due date required'),
         body('priority').optional().isIn(['low', 'medium', 'high'])
     ],
