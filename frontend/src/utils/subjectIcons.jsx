@@ -12,7 +12,8 @@ export const getSubjectIcon = (subject) => {
         'Writing': 'fi fi-rr-pencil',
         'Listening': FaHeadphones,
         'Speaking': RiSpeakLine,
-        'Grammar & Vocabulary': 'fi fi-rs-document'
+        'Grammar & Vocabulary': 'fi fi-rs-document',
+        'Grammar': 'fi fi-rs-document'
     }
     return icons[subject] || 'fi fi-rs-document'
 }
@@ -32,4 +33,12 @@ export const SubjectIcon = ({ subject, className = '' }) => {
     }
 
     return <i className={`${Icon} ${className}`}></i>
+}
+
+/**
+ * Format subject for display
+ */
+export const formatSubject = (subject) => {
+    if (subject === 'Grammar') return 'Grammar & Vocabulary'
+    return subject
 }

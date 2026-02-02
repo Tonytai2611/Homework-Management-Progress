@@ -4,7 +4,7 @@ import { useToast } from '../contexts/ToastContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { assignmentsAPI, studentsAPI } from '../api/assignments'
 import Header from '../components/Header'
-import { SubjectIcon } from '../utils/subjectIcons'
+import { SubjectIcon, formatSubject } from '../utils/subjectIcons'
 import Badge from '../components/shared/Badge'
 import EditAssignmentModal from '../components/EditAssignmentModal'
 import ConfirmDialog from '../components/ConfirmDialog'
@@ -515,7 +515,7 @@ const ManageAssignments = () => {
                                             <div className="flex items-center space-x-3 mb-2">
                                                 <SubjectIcon subject={assignment.subject} className="text-2xl" />
                                                 <div>
-                                                    <Badge variant={assignment.subject.toLowerCase()}>{assignment.subject}</Badge>
+                                                    <Badge variant={assignment.subject.toLowerCase()}>{formatSubject(assignment.subject)}</Badge>
                                                     <h3 className="font-semibold text-gray-900 mt-1">{assignment.title}</h3>
                                                 </div>
                                             </div>

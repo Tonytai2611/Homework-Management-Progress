@@ -3,6 +3,7 @@ import ProgressBar from '../components/shared/ProgressBar'
 import Badge from '../components/shared/Badge'
 import Header from '../components/Header'
 import { assignmentsAPI } from '../api/assignments'
+import { formatSubject } from '../utils/subjectIcons'
 
 const StudentProgress = () => {
     const [progressData, setProgressData] = useState(null)
@@ -101,7 +102,8 @@ const StudentProgress = () => {
                                         'Writing': 'green',
                                         'Listening': 'purple',
                                         'Speaking': 'orange',
-                                        'Grammar & Vocabulary': 'teal'
+                                        'Grammar & Vocabulary': 'teal',
+                                        'Grammar': 'teal'
                                     }
                                     return colors[subjectName] || 'purple'
                                 }
@@ -127,7 +129,7 @@ const StudentProgress = () => {
                                 return (
                                     <div key={subject.subject}>
                                         <div className="flex justify-between mb-2">
-                                            <span className="font-medium text-gray-900">{subject.subject}</span>
+                                            <span className="font-medium text-gray-900">{formatSubject(subject.subject)}</span>
                                             <div className="flex items-center space-x-3">
                                                 <span className="text-gray-600">{completed}/{total}</span>
                                                 <span className={`text-lg font-bold ${getTextColorClass(subjectColor)}`}>

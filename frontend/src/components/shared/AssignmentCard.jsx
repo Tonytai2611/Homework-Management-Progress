@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Badge from './Badge'
-import { SubjectIcon } from '../../utils/subjectIcons'
+import Badge from './Badge'
+import { SubjectIcon, formatSubject } from '../../utils/subjectIcons'
 import DescriptionIcon from '@mui/icons-material/Description'
 import { motion } from 'framer-motion'
 import { cn } from '../../utils/cn'
@@ -18,7 +19,7 @@ const AssignmentCard = ({
         'Writing': 'bg-gradient-to-br from-pink-400 to-rose-600 shadow-pink-200',
         'Listening': 'bg-gradient-to-br from-yellow-400 to-orange-500 shadow-orange-200',
         'Speaking': 'bg-gradient-to-br from-green-400 to-emerald-600 shadow-emerald-200',
-        'Grammar': 'bg-gradient-to-br from-purple-400 to-indigo-600 shadow-purple-200'
+        'Grammar & Vocabulary': 'bg-gradient-to-br from-purple-400 to-indigo-600 shadow-purple-200'
     }
 
     const getGradient = (subj) => subjectGradients[subj] || 'bg-gradient-to-br from-gray-400 to-gray-600'
@@ -104,7 +105,7 @@ const AssignmentCard = ({
                     <div className="flex-1 min-w-0">
                         <h4 className={`font-bold text-gray-800 truncate text-sm mb-0.5 ${status === 'completed' ? 'line-through text-gray-400' : ''}`}>{title}</h4>
                         <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <span className="capitalize font-medium text-gray-400">{subject}</span>
+                            <span className="capitalize font-medium text-gray-400">{formatSubject(subject)}</span>
                             {dueDateValue && (
                                 <>
                                     <span>•</span>
@@ -181,7 +182,7 @@ const AssignmentCard = ({
                         status === 'completed' ? "bg-gray-200 text-gray-500" : getSubjectStyle(subject)
                     )}>
                         <SubjectIcon subject={subject} className="text-[10px]" />
-                        <span>{subject}</span>
+                        <span>{formatSubject(subject)}</span>
                     </div>
                     {/* Status Badge for visibility */}
                     {status === 'completed' && (

@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import Badge from './shared/Badge'
+import { formatSubject } from '../utils/subjectIcons'
 
 const AssignmentDetailModal = ({ assignment, onClose, onMarkComplete }) => {
     const [completedTasks, setCompletedTasks] = useState(
@@ -30,7 +30,7 @@ const AssignmentDetailModal = ({ assignment, onClose, onMarkComplete }) => {
                 {/* Header */}
                 <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                        <Badge variant={assignment.subject?.toLowerCase()} size="sm">{assignment.subject}</Badge>
+                        <Badge variant={assignment.subject?.toLowerCase()} size="sm">{formatSubject(assignment.subject)}</Badge>
                         <h2 className="text-base sm:text-xl font-bold text-gray-900 truncate">{assignment.title}</h2>
                     </div>
                     <button
