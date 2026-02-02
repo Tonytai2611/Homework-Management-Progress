@@ -4,7 +4,7 @@ import { useToast } from '../contexts/ToastContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { assignmentsAPI, studentsAPI } from '../api/assignments'
 import Header from '../components/Header'
-import { getSubjectIcon, SubjectIcon } from '../utils/subjectIcons'
+import { SubjectIcon } from '../utils/subjectIcons'
 import Badge from '../components/shared/Badge'
 import EditAssignmentModal from '../components/EditAssignmentModal'
 import ConfirmDialog from '../components/ConfirmDialog'
@@ -48,7 +48,7 @@ const ManageAssignments = () => {
         { value: 'Writing', label: 'Writing' },
         { value: 'Listening', label: 'Listening' },
         { value: 'Speaking', label: 'Speaking' },
-        { value: 'Grammar & Vocabulary', label: 'Grammar & Vocabulary & Vocabulary' }
+        { value: 'Grammar', label: 'Grammar & Vocabulary' }
     ]
     const priorities = ['low', 'medium', 'high']
 
@@ -91,7 +91,8 @@ const ManageAssignments = () => {
             const response = await studentsAPI.getAll()
             setStudents(response.data || [])
         } catch (err) {
-
+            console.error('Failed to fetch students:', err)
+            showToast('Failed to load students list', 'error')
         }
     }
 
@@ -102,7 +103,8 @@ const ManageAssignments = () => {
             setAssignments(sortedAssignments)
             setFilteredAssignments(sortedAssignments)
         } catch (err) {
-
+            console.error('Failed to fetch assignments:', err)
+            showToast('Failed to load assignments', 'error')
         }
     }
 
